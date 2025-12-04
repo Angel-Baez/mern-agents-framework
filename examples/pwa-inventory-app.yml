@@ -1,0 +1,277 @@
+# =============================================================================
+# Ejemplo: PWA Inventory App (tipo GondolApp)
+# Aplicación de gestión de inventario offline-first con PWA
+# =============================================================================
+
+project:
+  name: "inventory-app"
+  description: "Sistema de gestión de inventario con capacidades offline y sincronización en tiempo real"
+  repository: "https://github.com/ejemplo/inventory-app"
+  type: "pwa-inventory"
+  version: "1.0.0"
+
+# Stack tecnológico
+stack:
+  framework: "next.js"
+  version: "14.x"
+  typescript: true
+  styling: "tailwind"
+  state_management: "zustand"
+  backend: "api-routes"
+  database: "mongodb"
+  orm: "mongoose"
+  deployment: "vercel"
+  runtime: "node"
+  node_version: "20.x"
+
+# Features habilitados
+features:
+  authentication:
+    enabled: true
+    provider: "next-auth"
+    strategies:
+      - "credentials"
+      - "google"
+    session_strategy: "jwt"
+  
+  offline_first:
+    enabled: true
+    sync_strategy: "background-sync"
+    conflict_resolution: "last-write-wins"
+    storage: "indexeddb"
+    max_offline_days: 30
+  
+  pwa:
+    enabled: true
+    service_worker: true
+    manifest: true
+    push_notifications: true
+    cache_strategy: "stale-while-revalidate"
+    offline_fallback: true
+  
+  payments:
+    enabled: false
+  
+  ai_integration:
+    enabled: false
+  
+  real_time:
+    enabled: true
+    provider: "socket.io"
+
+# Configuración de arquitectura
+architecture:
+  pattern: "clean-architecture"
+  layers:
+    - "presentation"
+    - "application"
+    - "domain"
+    - "infrastructure"
+  testing_strategy: "pyramid"
+  ci_cd: "github-actions"
+  branching: "github-flow"
+
+# Objetivos de calidad
+quality_targets:
+  lighthouse:
+    performance: 90
+    accessibility: 100
+    best_practices: 100
+    seo: 90
+    pwa: 100
+  test_coverage:
+    unit: 80
+    integration: 70
+    e2e: 50
+  core_web_vitals:
+    lcp: 2.5
+    fid: 100
+    cls: 0.1
+
+# Modelo de dominio
+domain:
+  entities:
+    - name: "Product"
+      description: "Producto del inventario"
+      fields:
+        - "id: string"
+        - "sku: string"
+        - "name: string"
+        - "description: string"
+        - "category: Category"
+        - "price: number"
+        - "cost: number"
+        - "quantity: number"
+        - "minStock: number"
+        - "location: string"
+        - "barcode: string"
+        - "images: string[]"
+        - "createdAt: Date"
+        - "updatedAt: Date"
+        - "syncedAt: Date"
+    
+    - name: "Category"
+      description: "Categoría de productos"
+      fields:
+        - "id: string"
+        - "name: string"
+        - "description: string"
+        - "parentId: string | null"
+        - "icon: string"
+    
+    - name: "Movement"
+      description: "Movimiento de inventario (entrada/salida)"
+      fields:
+        - "id: string"
+        - "productId: string"
+        - "type: 'in' | 'out' | 'adjustment'"
+        - "quantity: number"
+        - "reason: string"
+        - "userId: string"
+        - "createdAt: Date"
+        - "syncStatus: 'pending' | 'synced' | 'error'"
+    
+    - name: "User"
+      description: "Usuario del sistema"
+      fields:
+        - "id: string"
+        - "email: string"
+        - "name: string"
+        - "role: 'admin' | 'manager' | 'staff'"
+        - "permissions: string[]"
+    
+    - name: "Location"
+      description: "Ubicación física del almacén"
+      fields:
+        - "id: string"
+        - "name: string"
+        - "address: string"
+        - "type: 'warehouse' | 'store' | 'distribution'"
+  
+  main_flows:
+    - name: "Registro de Producto"
+      description: "Agregar nuevo producto al inventario"
+      steps:
+        - "Escanear código de barras o ingresar SKU"
+        - "Completar información del producto"
+        - "Asignar categoría y ubicación"
+        - "Guardar localmente (offline-first)"
+        - "Sincronizar con servidor cuando haya conexión"
+    
+    - name: "Movimiento de Inventario"
+      description: "Registrar entrada o salida de productos"
+      steps:
+        - "Seleccionar producto (escaneo o búsqueda)"
+        - "Especificar tipo de movimiento"
+        - "Ingresar cantidad y razón"
+        - "Confirmar movimiento"
+        - "Actualizar stock local"
+        - "Encolar para sincronización"
+    
+    - name: "Conteo de Inventario"
+      description: "Realizar conteo físico y ajustes"
+      steps:
+        - "Iniciar sesión de conteo"
+        - "Escanear productos y registrar cantidades"
+        - "Detectar discrepancias automáticamente"
+        - "Generar ajustes de inventario"
+        - "Aprobar y aplicar ajustes"
+    
+    - name: "Sincronización Offline"
+      description: "Sincronizar datos pendientes con el servidor"
+      steps:
+        - "Detectar conectividad"
+        - "Obtener cola de cambios pendientes"
+        - "Resolver conflictos (last-write-wins)"
+        - "Enviar cambios al servidor"
+        - "Recibir cambios del servidor"
+        - "Actualizar timestamp de sincronización"
+    
+    - name: "Alertas de Stock"
+      description: "Notificaciones de stock bajo"
+      steps:
+        - "Monitorear niveles de stock"
+        - "Comparar con stock mínimo configurado"
+        - "Generar alerta si está por debajo"
+        - "Enviar notificación push"
+        - "Mostrar en dashboard"
+
+# APIs externas
+external_apis:
+  - name: "Barcode Lookup API"
+    purpose: "Obtener información de productos por código de barras"
+    optional: true
+  
+  - name: "Google Cloud Vision"
+    purpose: "Escaneo de código de barras con cámara"
+    optional: true
+
+# Configuración PWA específica
+pwa_config:
+  name: "Inventory App"
+  short_name: "Inventory"
+  description: "Sistema de gestión de inventario offline-first"
+  theme_color: "#2563eb"
+  background_color: "#ffffff"
+  display: "standalone"
+  orientation: "portrait"
+  start_url: "/"
+  scope: "/"
+  icons:
+    - src: "/icons/icon-192x192.png"
+      sizes: "192x192"
+      type: "image/png"
+    - src: "/icons/icon-512x512.png"
+      sizes: "512x512"
+      type: "image/png"
+  
+  offline_pages:
+    - "/"
+    - "/products"
+    - "/movements"
+    - "/inventory"
+  
+  cache_assets:
+    - "/fonts/"
+    - "/images/"
+    - "/icons/"
+
+# Configuración de sincronización
+sync_config:
+  batch_size: 50
+  retry_attempts: 3
+  retry_delay: 5000
+  conflict_strategy: "last-write-wins"
+  sync_interval: 300000  # 5 minutos cuando online
+  background_sync_tag: "inventory-sync"
+
+# Estructura de directorios específica
+directory_structure:
+  src:
+    app:
+      - "(auth)/"
+      - "(dashboard)/"
+      - "api/"
+    components:
+      - "ui/"
+      - "products/"
+      - "movements/"
+      - "inventory/"
+      - "sync/"
+    core:
+      - "domain/"
+      - "application/"
+      - "infrastructure/"
+    lib:
+      - "db/"
+      - "sync/"
+      - "offline/"
+      - "pwa/"
+    hooks:
+      - "useOffline.ts"
+      - "useSync.ts"
+      - "useProducts.ts"
+    stores:
+      - "product.store.ts"
+      - "sync.store.ts"
+      - "offline.store.ts"

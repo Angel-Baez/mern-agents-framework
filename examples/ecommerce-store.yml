@@ -1,0 +1,429 @@
+# =============================================================================
+# Ejemplo: E-commerce Store
+# Tienda online con carrito, checkout y pagos
+# =============================================================================
+
+project:
+  name: "ecommerce-store"
+  description: "Tienda online completa con catálogo de productos, carrito de compras, checkout y pagos"
+  repository: "https://github.com/ejemplo/ecommerce-store"
+  type: "ecommerce"
+  version: "1.0.0"
+
+# Stack tecnológico
+stack:
+  framework: "next.js"
+  version: "14.x"
+  typescript: true
+  styling: "tailwind"
+  state_management: "zustand"
+  backend: "api-routes"
+  database: "mongodb"
+  orm: "mongoose"
+  deployment: "vercel"
+  runtime: "node"
+  node_version: "20.x"
+  
+  additional:
+    cms: "sanity"
+    email: "resend"
+    search: "algolia"
+    analytics: "google-analytics"
+    cdn: "cloudinary"
+
+# Features habilitados
+features:
+  authentication:
+    enabled: true
+    provider: "next-auth"
+    strategies:
+      - "credentials"
+      - "google"
+      - "facebook"
+    session_strategy: "jwt"
+    guest_checkout: true
+  
+  offline_first:
+    enabled: false
+  
+  pwa:
+    enabled: true
+    service_worker: true
+    manifest: true
+    push_notifications: true
+    add_to_home_screen: true
+  
+  payments:
+    enabled: true
+    providers:
+      - name: "stripe"
+        enabled: true
+        methods:
+          - "card"
+          - "google_pay"
+          - "apple_pay"
+      - name: "mercadopago"
+        enabled: true
+        countries:
+          - "MX"
+          - "AR"
+          - "BR"
+          - "CO"
+    webhooks:
+      - "checkout.session.completed"
+      - "payment_intent.succeeded"
+      - "payment_intent.failed"
+      - "charge.refunded"
+  
+  ai_integration:
+    enabled: true
+    provider: "openai"
+    use_cases:
+      - "Product recommendations"
+      - "Search enhancement"
+      - "Customer support chatbot"
+  
+  shipping:
+    enabled: true
+    providers:
+      - "fedex"
+      - "ups"
+      - "dhl"
+    real_time_rates: true
+    tracking: true
+  
+  inventory:
+    enabled: true
+    track_stock: true
+    low_stock_alerts: true
+    backorders: false
+
+# Configuración de arquitectura
+architecture:
+  pattern: "clean-architecture"
+  layers:
+    - "presentation"
+    - "application"
+    - "domain"
+    - "infrastructure"
+  testing_strategy: "pyramid"
+  ci_cd: "github-actions"
+  branching: "github-flow"
+
+# Objetivos de calidad
+quality_targets:
+  lighthouse:
+    performance: 90
+    accessibility: 100
+    best_practices: 100
+    seo: 95
+  test_coverage:
+    unit: 80
+    integration: 70
+    e2e: 60
+  conversion_rate_target: 3.0
+  cart_abandonment_target: 60
+
+# Modelo de dominio
+domain:
+  entities:
+    - name: "Product"
+      description: "Producto del catálogo"
+      fields:
+        - "id: string"
+        - "sku: string"
+        - "name: string"
+        - "slug: string"
+        - "description: string"
+        - "shortDescription: string"
+        - "price: number"
+        - "compareAtPrice: number"
+        - "cost: number"
+        - "categoryId: string"
+        - "brand: string"
+        - "images: ProductImage[]"
+        - "variants: ProductVariant[]"
+        - "attributes: ProductAttribute[]"
+        - "inventory: InventoryItem"
+        - "seo: SEOData"
+        - "status: 'active' | 'draft' | 'archived'"
+        - "tags: string[]"
+        - "createdAt: Date"
+        - "updatedAt: Date"
+    
+    - name: "ProductVariant"
+      description: "Variante de producto (talla, color, etc.)"
+      fields:
+        - "id: string"
+        - "productId: string"
+        - "sku: string"
+        - "name: string"
+        - "options: VariantOption[]"
+        - "price: number"
+        - "compareAtPrice: number"
+        - "inventory: number"
+        - "image: string"
+    
+    - name: "Category"
+      description: "Categoría de productos"
+      fields:
+        - "id: string"
+        - "name: string"
+        - "slug: string"
+        - "description: string"
+        - "parentId: string | null"
+        - "image: string"
+        - "seo: SEOData"
+    
+    - name: "Customer"
+      description: "Cliente registrado"
+      fields:
+        - "id: string"
+        - "email: string"
+        - "firstName: string"
+        - "lastName: string"
+        - "phone: string"
+        - "addresses: Address[]"
+        - "defaultAddressId: string"
+        - "orders: Order[]"
+        - "wishlist: string[]"
+        - "marketingConsent: boolean"
+        - "createdAt: Date"
+    
+    - name: "Cart"
+      description: "Carrito de compras"
+      fields:
+        - "id: string"
+        - "customerId: string | null"
+        - "sessionId: string"
+        - "items: CartItem[]"
+        - "subtotal: number"
+        - "discount: number"
+        - "shipping: number"
+        - "tax: number"
+        - "total: number"
+        - "couponCode: string"
+        - "expiresAt: Date"
+    
+    - name: "Order"
+      description: "Orden de compra"
+      fields:
+        - "id: string"
+        - "orderNumber: string"
+        - "customerId: string"
+        - "email: string"
+        - "items: OrderItem[]"
+        - "subtotal: number"
+        - "discount: number"
+        - "shipping: number"
+        - "tax: number"
+        - "total: number"
+        - "currency: string"
+        - "paymentStatus: PaymentStatus"
+        - "fulfillmentStatus: FulfillmentStatus"
+        - "shippingAddress: Address"
+        - "billingAddress: Address"
+        - "shippingMethod: ShippingMethod"
+        - "paymentMethod: PaymentMethod"
+        - "notes: string"
+        - "timeline: OrderEvent[]"
+        - "createdAt: Date"
+    
+    - name: "Coupon"
+      description: "Cupón de descuento"
+      fields:
+        - "id: string"
+        - "code: string"
+        - "type: 'percentage' | 'fixed' | 'free_shipping'"
+        - "value: number"
+        - "minPurchase: number"
+        - "maxUses: number"
+        - "usedCount: number"
+        - "applicableTo: 'all' | 'categories' | 'products'"
+        - "applicableIds: string[]"
+        - "startsAt: Date"
+        - "expiresAt: Date"
+        - "isActive: boolean"
+    
+    - name: "Review"
+      description: "Reseña de producto"
+      fields:
+        - "id: string"
+        - "productId: string"
+        - "customerId: string"
+        - "orderId: string"
+        - "rating: number"
+        - "title: string"
+        - "content: string"
+        - "images: string[]"
+        - "isVerified: boolean"
+        - "status: 'pending' | 'approved' | 'rejected'"
+        - "createdAt: Date"
+  
+  main_flows:
+    - name: "Navegación y Búsqueda"
+      description: "Explorar catálogo y buscar productos"
+      steps:
+        - "Navegar por categorías o usar búsqueda"
+        - "Aplicar filtros (precio, marca, atributos)"
+        - "Ver resultados paginados"
+        - "Ordenar por relevancia/precio/popularidad"
+        - "Ver detalle de producto"
+    
+    - name: "Agregar al Carrito"
+      description: "Añadir productos al carrito"
+      steps:
+        - "Seleccionar variante (si aplica)"
+        - "Especificar cantidad"
+        - "Agregar al carrito"
+        - "Mostrar mini-cart o drawer"
+        - "Continuar comprando o ir al checkout"
+    
+    - name: "Checkout"
+      description: "Proceso de pago"
+      steps:
+        - "Revisar carrito"
+        - "Ingresar datos de envío (o seleccionar guardados)"
+        - "Seleccionar método de envío"
+        - "Aplicar cupón (opcional)"
+        - "Seleccionar método de pago"
+        - "Confirmar orden"
+        - "Procesar pago con Stripe/MercadoPago"
+        - "Mostrar confirmación y enviar email"
+    
+    - name: "Gestión de Cuenta"
+      description: "Portal del cliente"
+      steps:
+        - "Ver historial de órdenes"
+        - "Rastrear envíos"
+        - "Gestionar direcciones"
+        - "Administrar wishlist"
+        - "Dejar reseñas"
+    
+    - name: "Fulfillment"
+      description: "Proceso de cumplimiento de órdenes"
+      steps:
+        - "Recibir notificación de nueva orden"
+        - "Preparar productos"
+        - "Generar etiqueta de envío"
+        - "Marcar como enviado"
+        - "Actualizar tracking"
+        - "Notificar al cliente"
+
+# APIs externas
+external_apis:
+  - name: "Stripe"
+    purpose: "Procesamiento de pagos (internacional)"
+    required: true
+  
+  - name: "MercadoPago"
+    purpose: "Procesamiento de pagos (LATAM)"
+    required: false
+  
+  - name: "Algolia"
+    purpose: "Búsqueda de productos"
+    required: false
+  
+  - name: "Cloudinary"
+    purpose: "Gestión de imágenes"
+    required: true
+  
+  - name: "Shippo / EasyPost"
+    purpose: "Tarifas de envío y etiquetas"
+    required: false
+  
+  - name: "Google Analytics"
+    purpose: "Analytics y eventos de ecommerce"
+    required: true
+
+# Configuración de pagos
+payments_config:
+  stripe:
+    checkout_mode: "payment"
+    currency: "usd"
+    payment_methods:
+      - "card"
+      - "google_pay"
+      - "apple_pay"
+    success_url: "/order/success?session_id={CHECKOUT_SESSION_ID}"
+    cancel_url: "/cart"
+  
+  mercadopago:
+    checkout_mode: "redirect"
+    currencies:
+      - "MXN"
+      - "ARS"
+      - "BRL"
+    binary_mode: false
+    installments: true
+
+# SEO Configuration
+seo_config:
+  site_name: "Mi Tienda Online"
+  default_title_template: "%s | Mi Tienda"
+  structured_data:
+    - "Organization"
+    - "WebSite"
+    - "BreadcrumbList"
+    - "Product"
+    - "Review"
+    - "FAQPage"
+  sitemap:
+    enabled: true
+    change_frequency: "daily"
+  robots:
+    index: true
+    follow: true
+
+# Estructura de directorios específica
+directory_structure:
+  src:
+    app:
+      - "(storefront)/"
+      - "(account)/"
+      - "(checkout)/"
+      - "api/"
+    components:
+      - "ui/"
+      - "layout/"
+      - "product/"
+      - "cart/"
+      - "checkout/"
+      - "account/"
+      - "search/"
+    core:
+      - "domain/"
+      - "application/"
+      - "infrastructure/"
+    lib:
+      - "db/"
+      - "stripe/"
+      - "mercadopago/"
+      - "algolia/"
+      - "cloudinary/"
+      - "shipping/"
+    hooks:
+      - "useCart.ts"
+      - "useCheckout.ts"
+      - "useProducts.ts"
+      - "useSearch.ts"
+    stores:
+      - "cart.store.ts"
+      - "checkout.store.ts"
+      - "wishlist.store.ts"
+
+# Webhooks configurados
+webhooks:
+  stripe:
+    endpoint: "/api/webhooks/stripe"
+    events:
+      - "checkout.session.completed"
+      - "payment_intent.succeeded"
+      - "payment_intent.failed"
+      - "charge.refunded"
+  
+  mercadopago:
+    endpoint: "/api/webhooks/mercadopago"
+    events:
+      - "payment"
+      - "merchant_order"
