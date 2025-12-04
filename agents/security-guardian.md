@@ -123,7 +123,9 @@ const user = await User.create({
 // ✅ SEGURO: Hash con bcrypt
 import bcrypt from "bcryptjs";
 
-const SALT_ROUNDS = 12; // Mínimo 10, recomendado 12+
+// Salt rounds configurable via environment (default: 12)
+// Higher = more secure but slower. Minimum 10, recommended 12+
+const SALT_ROUNDS = parseInt(process.env.BCRYPT_SALT_ROUNDS || "12", 10);
 
 async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, SALT_ROUNDS);
