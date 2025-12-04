@@ -233,20 +233,52 @@ function Comment({ content }: { content: string }) {
 
 // Content Security Policy
 // next.config.mjs
+// NOTA: Usar nonces para scripts y estilos inline en lugar de 'unsafe-inline'
+// Los nonces se generan por request en middleware
+
 const securityHeaders = [
   {
     key: "Content-Security-Policy",
     value: `
       default-src 'self';
-      script-src 'self' 'unsafe-eval' 'unsafe-inline';
-      style-src 'self' 'unsafe-inline';
+      script-src 'self';
+      style-src 'self';
       img-src 'self' blob: data: https:;
       font-src 'self';
       connect-src 'self' https://api.example.com;
       frame-ancestors 'none';
+      base-uri 'self';
+      form-action 'self';
     `.replace(/\s{2,}/g, " ").trim(),
   },
 ];
+
+// Para scripts/estilos inline necesarios, usar nonces:
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+
+export function middleware(request: NextRequest) {
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  
+  const cspHeader = `
+    default-src 'self';
+    script-src 'self' 'nonce-${nonce}';
+    style-src 'self' 'nonce-${nonce}';
+    img-src 'self' blob: data: https:;
+    font-src 'self';
+    connect-src 'self' https://api.example.com;
+    frame-ancestors 'none';
+    base-uri 'self';
+    form-action 'self';
+  `.replace(/\s{2,}/g, " ").trim();
+
+  const response = NextResponse.next();
+  response.headers.set("Content-Security-Policy", cspHeader);
+  response.headers.set("x-nonce", nonce);
+  
+  return response;
+}
 ```
 
 ---

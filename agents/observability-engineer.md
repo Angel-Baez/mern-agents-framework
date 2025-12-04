@@ -367,16 +367,19 @@ class Logger {
   }
 
   error(message: string, error?: Error, context?: LogContext) {
+    // Solo incluir stack traces en desarrollo para evitar filtrar información sensible
+    const isDev = process.env.NODE_ENV === "development";
+    const errorInfo = error
+      ? {
+          name: error.name,
+          message: error.message,
+          ...(isDev && error.stack ? { stack: error.stack } : {}),
+        }
+      : undefined;
     console.error(
       this.formatMessage("error", message, {
         ...context,
-        error: error
-          ? {
-              name: error.name,
-              message: error.message,
-              stack: error.stack,
-            }
-          : undefined,
+        error: errorInfo,
       })
     );
   }
