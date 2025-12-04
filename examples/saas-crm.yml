@@ -1,0 +1,377 @@
+# =============================================================================
+# Ejemplo: SaaS CRM
+# Plataforma CRM multi-tenant con suscripciones y facturación
+# =============================================================================
+
+project:
+  name: "saas-crm"
+  description: "CRM multi-tenant con gestión de leads, clientes, oportunidades y automatizaciones"
+  repository: "https://github.com/ejemplo/saas-crm"
+  type: "saas-platform"
+  version: "1.0.0"
+
+# Stack tecnológico
+stack:
+  framework: "next.js"
+  version: "14.x"
+  typescript: true
+  styling: "tailwind"
+  state_management: "zustand"
+  backend: "api-routes"
+  database: "mongodb"
+  orm: "mongoose"
+  deployment: "vercel"
+  runtime: "node"
+  node_version: "20.x"
+  
+  additional:
+    email: "resend"
+    queue: "bull"
+    cache: "redis"
+    search: "mongodb-atlas-search"
+
+# Features habilitados
+features:
+  authentication:
+    enabled: true
+    provider: "next-auth"
+    strategies:
+      - "credentials"
+      - "google"
+      - "microsoft"
+    session_strategy: "jwt"
+    mfa: true
+  
+  offline_first:
+    enabled: false
+  
+  pwa:
+    enabled: true
+    service_worker: false
+    manifest: true
+    push_notifications: true
+  
+  payments:
+    enabled: true
+    provider: "stripe"
+    products:
+      - name: "Starter"
+        price_monthly: 29
+        price_yearly: 290
+        features:
+          - "100 contactos"
+          - "1 usuario"
+          - "Email básico"
+      - name: "Professional"
+        price_monthly: 79
+        price_yearly: 790
+        features:
+          - "1,000 contactos"
+          - "5 usuarios"
+          - "Automatizaciones"
+          - "Integraciones"
+      - name: "Enterprise"
+        price_monthly: 199
+        price_yearly: 1990
+        features:
+          - "Contactos ilimitados"
+          - "Usuarios ilimitados"
+          - "API access"
+          - "Soporte dedicado"
+    webhooks:
+      - "checkout.session.completed"
+      - "customer.subscription.updated"
+      - "customer.subscription.deleted"
+      - "invoice.payment_failed"
+  
+  ai_integration:
+    enabled: true
+    provider: "openai"
+    model: "gpt-4-turbo"
+    use_cases:
+      - "Lead scoring"
+      - "Email drafting"
+      - "Meeting summaries"
+      - "Sales predictions"
+  
+  multi_tenancy:
+    enabled: true
+    isolation: "database-per-tenant"
+    subdomain_routing: true
+
+# Configuración de arquitectura
+architecture:
+  pattern: "clean-architecture"
+  layers:
+    - "presentation"
+    - "application"
+    - "domain"
+    - "infrastructure"
+  testing_strategy: "pyramid"
+  ci_cd: "github-actions"
+  branching: "github-flow"
+
+# Objetivos de calidad
+quality_targets:
+  lighthouse:
+    performance: 85
+    accessibility: 100
+    best_practices: 100
+    seo: 90
+  test_coverage:
+    unit: 80
+    integration: 70
+    e2e: 60
+  uptime: 99.9
+  response_time_p95: 200
+
+# Modelo de dominio
+domain:
+  entities:
+    - name: "Organization"
+      description: "Tenant/organización del CRM"
+      fields:
+        - "id: string"
+        - "name: string"
+        - "slug: string"
+        - "subdomain: string"
+        - "plan: Plan"
+        - "stripeCustomerId: string"
+        - "subscriptionStatus: SubscriptionStatus"
+        - "settings: OrganizationSettings"
+        - "createdAt: Date"
+    
+    - name: "User"
+      description: "Usuario del sistema"
+      fields:
+        - "id: string"
+        - "email: string"
+        - "name: string"
+        - "organizationId: string"
+        - "role: 'owner' | 'admin' | 'member'"
+        - "permissions: Permission[]"
+        - "lastLoginAt: Date"
+    
+    - name: "Contact"
+      description: "Contacto/Lead del CRM"
+      fields:
+        - "id: string"
+        - "organizationId: string"
+        - "email: string"
+        - "firstName: string"
+        - "lastName: string"
+        - "phone: string"
+        - "company: string"
+        - "jobTitle: string"
+        - "status: ContactStatus"
+        - "source: string"
+        - "ownerId: string"
+        - "tags: string[]"
+        - "customFields: Record<string, any>"
+        - "score: number"
+        - "createdAt: Date"
+    
+    - name: "Company"
+      description: "Empresa/Cuenta"
+      fields:
+        - "id: string"
+        - "organizationId: string"
+        - "name: string"
+        - "domain: string"
+        - "industry: string"
+        - "size: CompanySize"
+        - "revenue: number"
+        - "contacts: Contact[]"
+        - "deals: Deal[]"
+    
+    - name: "Deal"
+      description: "Oportunidad de venta"
+      fields:
+        - "id: string"
+        - "organizationId: string"
+        - "name: string"
+        - "value: number"
+        - "currency: string"
+        - "stage: DealStage"
+        - "probability: number"
+        - "expectedCloseDate: Date"
+        - "contactId: string"
+        - "companyId: string"
+        - "ownerId: string"
+        - "activities: Activity[]"
+    
+    - name: "Activity"
+      description: "Actividad de seguimiento"
+      fields:
+        - "id: string"
+        - "organizationId: string"
+        - "type: 'call' | 'email' | 'meeting' | 'task' | 'note'"
+        - "subject: string"
+        - "description: string"
+        - "contactId: string"
+        - "dealId: string"
+        - "userId: string"
+        - "dueDate: Date"
+        - "completedAt: Date"
+    
+    - name: "EmailCampaign"
+      description: "Campaña de email marketing"
+      fields:
+        - "id: string"
+        - "organizationId: string"
+        - "name: string"
+        - "subject: string"
+        - "content: string"
+        - "segmentId: string"
+        - "status: CampaignStatus"
+        - "scheduledAt: Date"
+        - "sentAt: Date"
+        - "stats: CampaignStats"
+    
+    - name: "Automation"
+      description: "Automatización de workflow"
+      fields:
+        - "id: string"
+        - "organizationId: string"
+        - "name: string"
+        - "trigger: AutomationTrigger"
+        - "conditions: Condition[]"
+        - "actions: Action[]"
+        - "isActive: boolean"
+  
+  main_flows:
+    - name: "Onboarding de Tenant"
+      description: "Registro de nueva organización"
+      steps:
+        - "Usuario se registra con email"
+        - "Crear organización y asignar subdomain"
+        - "Configurar plan inicial (trial)"
+        - "Crear primer usuario como owner"
+        - "Mostrar wizard de configuración"
+        - "Importar contactos (opcional)"
+    
+    - name: "Gestión de Leads"
+      description: "Captura y nurturing de leads"
+      steps:
+        - "Capturar lead (formulario, API, import)"
+        - "Enriquecer datos automáticamente"
+        - "Calcular lead score con AI"
+        - "Asignar a vendedor"
+        - "Crear actividades de seguimiento"
+        - "Convertir a oportunidad"
+    
+    - name: "Pipeline de Ventas"
+      description: "Gestión del pipeline de oportunidades"
+      steps:
+        - "Crear oportunidad desde lead"
+        - "Mover por etapas del pipeline"
+        - "Registrar actividades"
+        - "Actualizar probabilidad"
+        - "Cerrar ganada/perdida"
+        - "Generar reporte"
+    
+    - name: "Billing y Suscripciones"
+      description: "Gestión de pagos con Stripe"
+      steps:
+        - "Usuario selecciona plan"
+        - "Redirigir a Stripe Checkout"
+        - "Procesar pago"
+        - "Recibir webhook de confirmación"
+        - "Activar features del plan"
+        - "Enviar confirmación por email"
+    
+    - name: "Automatizaciones"
+      description: "Workflows automáticos"
+      steps:
+        - "Definir trigger (evento)"
+        - "Configurar condiciones"
+        - "Especificar acciones"
+        - "Activar automatización"
+        - "Ejecutar cuando se cumple trigger"
+        - "Registrar historial de ejecución"
+
+# APIs externas
+external_apis:
+  - name: "Stripe"
+    purpose: "Pagos y suscripciones"
+    required: true
+  
+  - name: "OpenAI"
+    purpose: "AI features (lead scoring, email drafting)"
+    required: false
+  
+  - name: "Resend"
+    purpose: "Envío de emails transaccionales y marketing"
+    required: true
+  
+  - name: "Clearbit"
+    purpose: "Enriquecimiento de datos de contactos"
+    required: false
+
+# Configuración multi-tenant
+multi_tenant_config:
+  isolation_level: "database-per-tenant"
+  tenant_resolution:
+    strategy: "subdomain"
+    default_subdomain: "app"
+    custom_domains: true
+  
+  resource_limits:
+    starter:
+      contacts: 100
+      users: 1
+      storage_gb: 1
+      api_calls_per_day: 1000
+    professional:
+      contacts: 1000
+      users: 5
+      storage_gb: 10
+      api_calls_per_day: 10000
+    enterprise:
+      contacts: -1  # unlimited
+      users: -1
+      storage_gb: 100
+      api_calls_per_day: 100000
+
+# Estructura de directorios específica
+directory_structure:
+  src:
+    app:
+      - "(marketing)/"
+      - "(auth)/"
+      - "(dashboard)/"
+      - "api/"
+    components:
+      - "ui/"
+      - "marketing/"
+      - "dashboard/"
+      - "contacts/"
+      - "deals/"
+      - "activities/"
+      - "billing/"
+    core:
+      - "domain/"
+      - "application/"
+      - "infrastructure/"
+    lib:
+      - "db/"
+      - "stripe/"
+      - "email/"
+      - "ai/"
+      - "queue/"
+    middleware:
+      - "tenant.ts"
+      - "subscription.ts"
+      - "rate-limit.ts"
+
+# Webhooks configurados
+webhooks:
+  stripe:
+    endpoint: "/api/webhooks/stripe"
+    events:
+      - "checkout.session.completed"
+      - "customer.subscription.created"
+      - "customer.subscription.updated"
+      - "customer.subscription.deleted"
+      - "invoice.payment_succeeded"
+      - "invoice.payment_failed"

@@ -1,0 +1,429 @@
+# =============================================================================
+# Ejemplo: Admin Panel
+# Dashboard administrativo con reportes, CRUD y gestión de usuarios
+# =============================================================================
+
+project:
+  name: "admin-panel"
+  description: "Panel de administración con dashboard, reportes, gestión de usuarios y configuración"
+  repository: "https://github.com/ejemplo/admin-panel"
+  type: "admin-dashboard"
+  version: "1.0.0"
+
+# Stack tecnológico
+stack:
+  framework: "next.js"
+  version: "14.x"
+  typescript: true
+  styling: "tailwind"
+  ui_library: "shadcn/ui"
+  state_management: "zustand"
+  backend: "api-routes"
+  database: "mongodb"
+  orm: "mongoose"
+  deployment: "vercel"
+  runtime: "node"
+  node_version: "20.x"
+  
+  additional:
+    charts: "recharts"
+    tables: "tanstack-table"
+    forms: "react-hook-form"
+    validation: "zod"
+    date: "date-fns"
+
+# Features habilitados
+features:
+  authentication:
+    enabled: true
+    provider: "next-auth"
+    strategies:
+      - "credentials"
+      - "google"
+    session_strategy: "jwt"
+    rbac: true
+    roles:
+      - "super_admin"
+      - "admin"
+      - "manager"
+      - "viewer"
+  
+  offline_first:
+    enabled: false
+  
+  pwa:
+    enabled: false
+  
+  payments:
+    enabled: false
+  
+  ai_integration:
+    enabled: true
+    provider: "openai"
+    use_cases:
+      - "Report summaries"
+      - "Data analysis"
+      - "Anomaly detection"
+  
+  audit_log:
+    enabled: true
+    tracked_actions:
+      - "create"
+      - "update"
+      - "delete"
+      - "login"
+      - "logout"
+      - "permission_change"
+  
+  notifications:
+    enabled: true
+    channels:
+      - "in_app"
+      - "email"
+    types:
+      - "system_alerts"
+      - "user_actions"
+      - "reports"
+
+# Configuración de arquitectura
+architecture:
+  pattern: "clean-architecture"
+  layers:
+    - "presentation"
+    - "application"
+    - "domain"
+    - "infrastructure"
+  testing_strategy: "pyramid"
+  ci_cd: "github-actions"
+  branching: "github-flow"
+
+# Objetivos de calidad
+quality_targets:
+  lighthouse:
+    performance: 85
+    accessibility: 100
+    best_practices: 100
+    seo: 80
+  test_coverage:
+    unit: 80
+    integration: 70
+    e2e: 50
+  max_page_load_time: 2000
+
+# Modelo de dominio
+domain:
+  entities:
+    - name: "User"
+      description: "Usuario del sistema admin"
+      fields:
+        - "id: string"
+        - "email: string"
+        - "name: string"
+        - "avatar: string"
+        - "role: Role"
+        - "permissions: Permission[]"
+        - "department: string"
+        - "isActive: boolean"
+        - "lastLoginAt: Date"
+        - "createdAt: Date"
+        - "updatedAt: Date"
+    
+    - name: "Role"
+      description: "Rol de usuario"
+      fields:
+        - "id: string"
+        - "name: string"
+        - "description: string"
+        - "permissions: Permission[]"
+        - "isSystem: boolean"
+    
+    - name: "Permission"
+      description: "Permiso individual"
+      fields:
+        - "id: string"
+        - "resource: string"
+        - "action: 'create' | 'read' | 'update' | 'delete' | 'manage'"
+        - "conditions: PermissionCondition[]"
+    
+    - name: "AuditLog"
+      description: "Registro de auditoría"
+      fields:
+        - "id: string"
+        - "userId: string"
+        - "action: string"
+        - "resource: string"
+        - "resourceId: string"
+        - "previousValue: any"
+        - "newValue: any"
+        - "ipAddress: string"
+        - "userAgent: string"
+        - "createdAt: Date"
+    
+    - name: "Setting"
+      description: "Configuración del sistema"
+      fields:
+        - "id: string"
+        - "key: string"
+        - "value: any"
+        - "type: 'string' | 'number' | 'boolean' | 'json'"
+        - "category: string"
+        - "isPublic: boolean"
+        - "updatedBy: string"
+        - "updatedAt: Date"
+    
+    - name: "Notification"
+      description: "Notificación del sistema"
+      fields:
+        - "id: string"
+        - "userId: string"
+        - "type: NotificationType"
+        - "title: string"
+        - "message: string"
+        - "data: any"
+        - "isRead: boolean"
+        - "readAt: Date"
+        - "createdAt: Date"
+    
+    - name: "Report"
+      description: "Reporte generado"
+      fields:
+        - "id: string"
+        - "name: string"
+        - "type: ReportType"
+        - "parameters: any"
+        - "generatedBy: string"
+        - "fileUrl: string"
+        - "status: 'pending' | 'processing' | 'completed' | 'failed'"
+        - "createdAt: Date"
+    
+    - name: "Dashboard"
+      description: "Dashboard personalizado"
+      fields:
+        - "id: string"
+        - "name: string"
+        - "userId: string"
+        - "isDefault: boolean"
+        - "layout: DashboardLayout"
+        - "widgets: Widget[]"
+        - "refreshInterval: number"
+  
+  main_flows:
+    - name: "Autenticación y Autorización"
+      description: "Login con verificación de permisos"
+      steps:
+        - "Usuario ingresa credenciales"
+        - "Validar credenciales"
+        - "Verificar cuenta activa"
+        - "Cargar rol y permisos"
+        - "Generar token JWT"
+        - "Registrar en audit log"
+        - "Redirigir al dashboard"
+    
+    - name: "Gestión de Usuarios"
+      description: "CRUD de usuarios con RBAC"
+      steps:
+        - "Listar usuarios (paginado, filtrado)"
+        - "Crear nuevo usuario"
+        - "Asignar rol y permisos"
+        - "Editar información"
+        - "Activar/desactivar cuenta"
+        - "Reset de contraseña"
+        - "Registrar cambios en audit log"
+    
+    - name: "Dashboard Dinámico"
+      description: "Visualización de métricas en tiempo real"
+      steps:
+        - "Cargar configuración de dashboard"
+        - "Obtener datos de widgets"
+        - "Renderizar gráficos y KPIs"
+        - "Configurar auto-refresh"
+        - "Personalizar layout (drag & drop)"
+        - "Guardar configuración"
+    
+    - name: "Generación de Reportes"
+      description: "Crear y exportar reportes"
+      steps:
+        - "Seleccionar tipo de reporte"
+        - "Configurar parámetros y filtros"
+        - "Previsualizar datos"
+        - "Generar reporte (async)"
+        - "Notificar cuando esté listo"
+        - "Descargar en formato seleccionado"
+    
+    - name: "Configuración del Sistema"
+      description: "Gestionar settings globales"
+      steps:
+        - "Navegar a sección de configuración"
+        - "Ver configuraciones por categoría"
+        - "Editar valores"
+        - "Validar cambios"
+        - "Guardar y registrar en audit log"
+        - "Aplicar cambios (algunos requieren restart)"
+
+# Configuración RBAC
+rbac_config:
+  roles:
+    - name: "super_admin"
+      description: "Acceso total al sistema"
+      permissions:
+        - "users:manage"
+        - "roles:manage"
+        - "settings:manage"
+        - "reports:manage"
+        - "audit:read"
+    
+    - name: "admin"
+      description: "Administrador general"
+      permissions:
+        - "users:create"
+        - "users:read"
+        - "users:update"
+        - "settings:read"
+        - "settings:update"
+        - "reports:create"
+        - "reports:read"
+    
+    - name: "manager"
+      description: "Gestor de área"
+      permissions:
+        - "users:read"
+        - "reports:create"
+        - "reports:read"
+        - "dashboard:read"
+    
+    - name: "viewer"
+      description: "Solo lectura"
+      permissions:
+        - "dashboard:read"
+        - "reports:read"
+  
+  resources:
+    - "users"
+    - "roles"
+    - "settings"
+    - "reports"
+    - "dashboard"
+    - "audit"
+    - "notifications"
+
+# Dashboard widgets disponibles
+dashboard_widgets:
+  - type: "stat_card"
+    title: "KPI Card"
+    description: "Muestra un valor numérico con tendencia"
+  
+  - type: "line_chart"
+    title: "Line Chart"
+    description: "Gráfico de líneas temporal"
+  
+  - type: "bar_chart"
+    title: "Bar Chart"
+    description: "Gráfico de barras"
+  
+  - type: "pie_chart"
+    title: "Pie Chart"
+    description: "Gráfico circular"
+  
+  - type: "area_chart"
+    title: "Area Chart"
+    description: "Gráfico de área"
+  
+  - type: "data_table"
+    title: "Data Table"
+    description: "Tabla de datos paginada"
+  
+  - type: "activity_feed"
+    title: "Activity Feed"
+    description: "Lista de actividades recientes"
+  
+  - type: "map"
+    title: "Map"
+    description: "Mapa geográfico"
+
+# Estructura de directorios específica
+directory_structure:
+  src:
+    app:
+      - "(auth)/"
+      - "(dashboard)/"
+      - "api/"
+    components:
+      - "ui/"
+      - "layout/"
+      - "dashboard/"
+      - "users/"
+      - "reports/"
+      - "settings/"
+      - "charts/"
+      - "tables/"
+    core:
+      - "domain/"
+      - "application/"
+      - "infrastructure/"
+    lib:
+      - "db/"
+      - "auth/"
+      - "rbac/"
+      - "audit/"
+    hooks:
+      - "usePermissions.ts"
+      - "useAudit.ts"
+      - "useDashboard.ts"
+      - "useReports.ts"
+    stores:
+      - "user.store.ts"
+      - "dashboard.store.ts"
+      - "notification.store.ts"
+
+# Tablas de datos configuradas
+data_tables:
+  users:
+    columns:
+      - { key: "name", label: "Nombre", sortable: true, filterable: true }
+      - { key: "email", label: "Email", sortable: true, filterable: true }
+      - { key: "role", label: "Rol", sortable: true, filterable: true }
+      - { key: "department", label: "Departamento", filterable: true }
+      - { key: "isActive", label: "Estado", filterable: true }
+      - { key: "lastLoginAt", label: "Último acceso", sortable: true }
+      - { key: "actions", label: "Acciones" }
+    
+    bulk_actions:
+      - "activate"
+      - "deactivate"
+      - "export"
+  
+  audit_logs:
+    columns:
+      - { key: "createdAt", label: "Fecha", sortable: true }
+      - { key: "user", label: "Usuario", filterable: true }
+      - { key: "action", label: "Acción", filterable: true }
+      - { key: "resource", label: "Recurso", filterable: true }
+      - { key: "details", label: "Detalles" }
+    
+    export_formats:
+      - "csv"
+      - "excel"
+      - "pdf"
+
+# Reportes disponibles
+report_types:
+  - id: "user_activity"
+    name: "Actividad de Usuarios"
+    parameters:
+      - { name: "dateRange", type: "date_range", required: true }
+      - { name: "userId", type: "select", required: false }
+    formats: ["pdf", "excel", "csv"]
+  
+  - id: "audit_summary"
+    name: "Resumen de Auditoría"
+    parameters:
+      - { name: "dateRange", type: "date_range", required: true }
+      - { name: "action", type: "multi_select", required: false }
+    formats: ["pdf", "excel"]
+  
+  - id: "system_usage"
+    name: "Uso del Sistema"
+    parameters:
+      - { name: "dateRange", type: "date_range", required: true }
+      - { name: "granularity", type: "select", required: true, options: ["hour", "day", "week", "month"] }
+    formats: ["pdf", "excel"]
