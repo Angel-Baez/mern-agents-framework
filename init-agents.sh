@@ -31,8 +31,8 @@ NC='\033[0m' # No Color
 
 # Configuración
 REPO_URL="https://raw.githubusercontent.com/Angel-Baez/mern-agents-framework/main"
-AGENTS_DIR=".github/copilot/agents"
-AGENTS_DIR_ALT=".github/agents"
+AGENTS_DIR_STANDARD=".github/agents"
+AGENTS_DIR_COMPAT=".github/copilot/agents"
 
 # =============================================================================
 # FUNCIONES DE UTILIDAD
@@ -196,11 +196,11 @@ collect_project_info() {
 create_directory_structure() {
     print_step "Creando estructura de directorios..."
     
-    # Crear directorios principales
-    mkdir -p "$AGENTS_DIR/_core"
-    mkdir -p "$AGENTS_DIR_ALT"
+    # Crear directorios principales para ambas ubicaciones
+    mkdir -p "$AGENTS_DIR_STANDARD/_core"
+    mkdir -p "$AGENTS_DIR_COMPAT/_core"
     
-    print_success "Directorios creados: $AGENTS_DIR y $AGENTS_DIR_ALT"
+    print_success "Directorios creados: $AGENTS_DIR_STANDARD y $AGENTS_DIR_COMPAT"
 }
 
 download_core_files() {
@@ -215,10 +215,13 @@ download_core_files() {
     )
     
     for file in "${core_files[@]}"; do
-        $DOWNLOAD_CMD "$REPO_URL/_core/$file" > "$AGENTS_DIR/_core/$file" 2>/dev/null || {
+        # Descargar a ubicación estándar
+        $DOWNLOAD_CMD "$REPO_URL/_core/$file" > "$AGENTS_DIR_STANDARD/_core/$file" 2>/dev/null || {
             print_warning "No se pudo descargar $file, creando placeholder..."
-            echo "# $file - Placeholder" > "$AGENTS_DIR/_core/$file"
+            echo "# $file - Placeholder" > "$AGENTS_DIR_STANDARD/_core/$file"
         }
+        # Copiar a ubicación alternativa (compatibilidad)
+        cp "$AGENTS_DIR_STANDARD/_core/$file" "$AGENTS_DIR_COMPAT/_core/$file"
         print_success "  $file"
     done
 }
@@ -245,9 +248,12 @@ download_agents() {
     )
     
     for agent in "${agents[@]}"; do
-        $DOWNLOAD_CMD "$REPO_URL/agents/$agent" > "$AGENTS_DIR/$agent" 2>/dev/null || {
+        # Descargar a ubicación estándar
+        $DOWNLOAD_CMD "$REPO_URL/agents/$agent" > "$AGENTS_DIR_STANDARD/$agent" 2>/dev/null || {
             print_warning "No se pudo descargar $agent"
         }
+        # Copiar a ubicación alternativa (compatibilidad)
+        cp "$AGENTS_DIR_STANDARD/$agent" "$AGENTS_DIR_COMPAT/$agent" 2>/dev/null || true
         print_success "  $agent"
     done
 }
@@ -258,18 +264,25 @@ download_template() {
     if [ -n "$template" ]; then
         print_step "Descargando template: $template..."
         
+        # Crear directorio templates en ambas ubicaciones
+        mkdir -p "$AGENTS_DIR_STANDARD/templates"
+        mkdir -p "$AGENTS_DIR_COMPAT/templates"
+        
         case $template in
             "pwa-offline")
-                $DOWNLOAD_CMD "$REPO_URL/templates/pwa-offline/pwa-specialist.md" > "$AGENTS_DIR/pwa-specialist.md" 2>/dev/null
-                print_success "  pwa-specialist.md"
+                $DOWNLOAD_CMD "$REPO_URL/templates/pwa-offline/pwa-specialist.md" > "$AGENTS_DIR_STANDARD/templates/pwa-specialist.md" 2>/dev/null
+                cp "$AGENTS_DIR_STANDARD/templates/pwa-specialist.md" "$AGENTS_DIR_COMPAT/templates/pwa-specialist.md" 2>/dev/null || true
+                print_success "  templates/pwa-specialist.md"
                 ;;
             "saas-platform")
-                $DOWNLOAD_CMD "$REPO_URL/templates/saas-platform/saas-architect.md" > "$AGENTS_DIR/saas-architect.md" 2>/dev/null
-                print_success "  saas-architect.md"
+                $DOWNLOAD_CMD "$REPO_URL/templates/saas-platform/saas-architect.md" > "$AGENTS_DIR_STANDARD/templates/saas-architect.md" 2>/dev/null
+                cp "$AGENTS_DIR_STANDARD/templates/saas-architect.md" "$AGENTS_DIR_COMPAT/templates/saas-architect.md" 2>/dev/null || true
+                print_success "  templates/saas-architect.md"
                 ;;
             "ecommerce")
-                $DOWNLOAD_CMD "$REPO_URL/templates/ecommerce/payments-specialist.md" > "$AGENTS_DIR/payments-specialist.md" 2>/dev/null
-                print_success "  payments-specialist.md"
+                $DOWNLOAD_CMD "$REPO_URL/templates/ecommerce/payments-specialist.md" > "$AGENTS_DIR_STANDARD/templates/payments-specialist.md" 2>/dev/null
+                cp "$AGENTS_DIR_STANDARD/templates/payments-specialist.md" "$AGENTS_DIR_COMPAT/templates/payments-specialist.md" 2>/dev/null || true
+                print_success "  templates/payments-specialist.md"
                 ;;
         esac
     fi
@@ -288,7 +301,8 @@ generate_project_context() {
       description: \"Entidad $entity del sistema\""
     done
     
-    cat > "$AGENTS_DIR/project-context.yml" << EOF
+    # Crear project-context.yml en ubicación estándar
+    cat > "$AGENTS_DIR_STANDARD/project-context.yml" << EOF
 # =============================================================================
 # PROJECT CONTEXT - $PROJECT_NAME
 # =============================================================================
@@ -359,21 +373,10 @@ conventions:
   commit_convention: "conventional"
 EOF
     
-    print_success "project-context.yml generado"
-}
-
-# =============================================================================
-# CREACIÓN DE SYMLINKS
-# =============================================================================
-
-create_symlinks() {
-    print_step "Creando symlinks para compatibilidad..."
+    # Copiar a ubicación alternativa (compatibilidad)
+    cp "$AGENTS_DIR_STANDARD/project-context.yml" "$AGENTS_DIR_COMPAT/project-context.yml"
     
-    # Crear symlink desde .github/agents a .github/copilot/agents
-    if [ -d "$AGENTS_DIR" ]; then
-        ln -sf "../copilot/agents" "$AGENTS_DIR_ALT" 2>/dev/null || true
-        print_success "Symlink creado para compatibilidad"
-    fi
+    print_success "project-context.yml generado en ambas ubicaciones"
 }
 
 # =============================================================================
@@ -390,13 +393,20 @@ print_summary() {
     echo -e "Tipo: ${CYAN}$PROJECT_TYPE${NC}"
     echo ""
     echo "Archivos creados:"
-    echo -e "  ${BLUE}$AGENTS_DIR/${NC}"
+    echo -e "  ${BLUE}$AGENTS_DIR_STANDARD/${NC} (Ubicación estándar)"
     echo "    ├── _core/             (Contexto compartido)"
+    echo "    ├── templates/         (Agentes especializados - si aplica)"
     echo "    ├── project-context.yml (Configuración del proyecto)"
-    echo "    └── *.md               (Agentes especializados)"
+    echo "    └── *.md               (Agentes)"
+    echo ""
+    echo -e "  ${BLUE}$AGENTS_DIR_COMPAT/${NC} (Ubicación alternativa - compatibilidad)"
+    echo "    ├── _core/             (Contexto compartido)"
+    echo "    ├── templates/         (Agentes especializados - si aplica)"
+    echo "    ├── project-context.yml (Configuración del proyecto)"
+    echo "    └── *.md               (Agentes)"
     echo ""
     echo -e "${YELLOW}Próximos pasos:${NC}"
-    echo "  1. Revisa y personaliza $AGENTS_DIR/project-context.yml"
+    echo "  1. Revisa y personaliza $AGENTS_DIR_STANDARD/project-context.yml"
     echo "  2. Usa los agentes en GitHub Copilot Chat:"
     echo ""
     echo -e "     ${PURPLE}@orchestrator${NC} ¿Cómo empiezo a desarrollar mi aplicación?"
@@ -442,7 +452,6 @@ main() {
     fi
     
     generate_project_context
-    create_symlinks
     print_summary
 }
 
