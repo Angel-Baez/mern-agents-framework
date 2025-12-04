@@ -28,7 +28,7 @@ Este comando:
 - ✅ Descarga automáticamente los agentes
 - ✅ Aplica templates (PWA, SaaS, ecommerce, admin dashboard)
 - ✅ Genera el archivo `project-context.yml`
-- ✅ Configura `.github/copilot/agents/`
+- ✅ Configura `.github/agents/` y `.github/copilot/agents/` (compatibilidad)
 - ✅ Muestra un asistente interactivo
 
 **Funciona en:**
@@ -128,14 +128,46 @@ graph LR
 ```
 tu-proyecto/
 ├── .github/
+│   ├── agents/                          # Ubicación estándar
+│   │   ├── _core/
+│   │   │   ├── _framework-context.md
+│   │   │   ├── _shared-solid-principles.md
+│   │   │   ├── _shared-data-modeling.md
+│   │   │   ├── _shared-workflows.md
+│   │   │   └── _conflict-resolution.md
+│   │   │
+│   │   ├── orchestrator.md
+│   │   ├── product-manager.md
+│   │   ├── solution-architect.md
+│   │   ├── backend-architect.md
+│   │   ├── frontend-architect.md
+│   │   ├── data-engineer.md
+│   │   ├── security-guardian.md
+│   │   ├── test-engineer.md
+│   │   ├── qa-lead.md
+│   │   ├── devops-engineer.md
+│   │   ├── observability-engineer.md
+│   │   ├── ai-integration-engineer.md
+│   │   ├── documentation-engineer.md
+│   │   ├── release-manager.md
+│   │   ├── code-reviewer.md
+│   │   │
+│   │   ├── templates/                   # Solo si selecciona features
+│   │   │   ├── pwa-specialist.md
+│   │   │   ├── payments-specialist.md
+│   │   │   └── saas-architect.md
+│   │   │
+│   │   └── project-context.yml
+│   │
 │   └── copilot/
-│       └── agents/
-│           ├── _core/                    # Contexto compartido
+│       └── agents/                      # Ubicación alternativa (compatibilidad)
+│           ├── _core/
 │           │   ├── _framework-context.md
 │           │   ├── _shared-solid-principles.md
 │           │   ├── _shared-data-modeling.md
 │           │   ├── _shared-workflows.md
 │           │   └── _conflict-resolution.md
+│           │
 │           ├── orchestrator.md
 │           ├── product-manager.md
 │           ├── solution-architect.md
@@ -151,7 +183,14 @@ tu-proyecto/
 │           ├── documentation-engineer.md
 │           ├── release-manager.md
 │           ├── code-reviewer.md
+│           │
+│           ├── templates/               # Solo si selecciona features
+│           │   ├── pwa-specialist.md
+│           │   ├── payments-specialist.md
+│           │   └── saas-architect.md
+│           │
 │           └── project-context.yml
+│
 ├── src/
 │   ├── app/                              # Next.js App Router
 │   │   ├── api/                          # API Routes
