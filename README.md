@@ -15,7 +15,28 @@
 
 ## 🚀 Quick Start
 
-### Instalación Automática (Recomendado)
+### 1. Instalación vía CLI (npx) — La forma moderna y recomendada
+
+Ideal para proyectos nuevos o cuando quieres la experiencia completa del instalador interactivo.
+
+```bash
+npx create-mern-agents
+```
+
+Este comando:
+- ✅ Detecta tu proyecto
+- ✅ Descarga automáticamente los agentes
+- ✅ Aplica templates (PWA, SaaS, ecommerce, admin dashboard)
+- ✅ Genera el archivo `project-context.yml`
+- ✅ Configura `.github/copilot/agents/`
+- ✅ Muestra un asistente interactivo
+
+**Funciona en:**
+- 🐧 Linux
+- 🍎 macOS
+- 🪟 Windows (PowerShell y Git Bash)
+
+### 2. Instalación Automática (mediante Scripts)
 
 ```bash
 # Linux/macOS
@@ -25,7 +46,7 @@ curl -fsSL https://raw.githubusercontent.com/Angel-Baez/mern-agents-framework/ma
 irm https://raw.githubusercontent.com/Angel-Baez/mern-agents-framework/main/init-agents.ps1 | iex
 ```
 
-### Instalación Manual
+### 3. Instalación Manual
 
 ```bash
 # Clonar el repositorio
