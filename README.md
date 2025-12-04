@@ -15,7 +15,28 @@
 
 ## 🚀 Quick Start
 
-### Instalación Automática (Recomendado)
+### 1. Instalación vía CLI (npx) — La forma moderna y recomendada
+
+Ideal para proyectos nuevos o cuando quieres la experiencia completa del instalador interactivo.
+
+```bash
+npx create-mern-agents
+```
+
+Este comando:
+- ✅ Detecta tu proyecto
+- ✅ Descarga automáticamente los agentes
+- ✅ Aplica templates (PWA, SaaS, ecommerce, admin dashboard)
+- ✅ Genera el archivo `project-context.yml`
+- ✅ Configura `.github/agents/` y `.github/copilot/agents/` (compatibilidad)
+- ✅ Muestra un asistente interactivo
+
+**Funciona en:**
+- 🐧 Linux
+- 🍎 macOS
+- 🪟 Windows (PowerShell y Git Bash)
+
+### 2. Instalación Automática (mediante Scripts)
 
 ```bash
 # Linux/macOS
@@ -25,7 +46,7 @@ curl -fsSL https://raw.githubusercontent.com/Angel-Baez/mern-agents-framework/ma
 irm https://raw.githubusercontent.com/Angel-Baez/mern-agents-framework/main/init-agents.ps1 | iex
 ```
 
-### Instalación Manual
+### 3. Instalación Manual
 
 ```bash
 # Clonar el repositorio
@@ -107,14 +128,46 @@ graph LR
 ```
 tu-proyecto/
 ├── .github/
+│   ├── agents/                          # Ubicación estándar
+│   │   ├── _core/
+│   │   │   ├── _framework-context.md
+│   │   │   ├── _shared-solid-principles.md
+│   │   │   ├── _shared-data-modeling.md
+│   │   │   ├── _shared-workflows.md
+│   │   │   └── _conflict-resolution.md
+│   │   │
+│   │   ├── orchestrator.md
+│   │   ├── product-manager.md
+│   │   ├── solution-architect.md
+│   │   ├── backend-architect.md
+│   │   ├── frontend-architect.md
+│   │   ├── data-engineer.md
+│   │   ├── security-guardian.md
+│   │   ├── test-engineer.md
+│   │   ├── qa-lead.md
+│   │   ├── devops-engineer.md
+│   │   ├── observability-engineer.md
+│   │   ├── ai-integration-engineer.md
+│   │   ├── documentation-engineer.md
+│   │   ├── release-manager.md
+│   │   ├── code-reviewer.md
+│   │   │
+│   │   ├── templates/                   # Solo si selecciona features
+│   │   │   ├── pwa-specialist.md
+│   │   │   ├── payments-specialist.md
+│   │   │   └── saas-architect.md
+│   │   │
+│   │   └── project-context.yml
+│   │
 │   └── copilot/
-│       └── agents/
-│           ├── _core/                    # Contexto compartido
+│       └── agents/                      # Ubicación alternativa (compatibilidad)
+│           ├── _core/
 │           │   ├── _framework-context.md
 │           │   ├── _shared-solid-principles.md
 │           │   ├── _shared-data-modeling.md
 │           │   ├── _shared-workflows.md
 │           │   └── _conflict-resolution.md
+│           │
 │           ├── orchestrator.md
 │           ├── product-manager.md
 │           ├── solution-architect.md
@@ -130,7 +183,14 @@ tu-proyecto/
 │           ├── documentation-engineer.md
 │           ├── release-manager.md
 │           ├── code-reviewer.md
+│           │
+│           ├── templates/               # Solo si selecciona features
+│           │   ├── pwa-specialist.md
+│           │   ├── payments-specialist.md
+│           │   └── saas-architect.md
+│           │
 │           └── project-context.yml
+│
 ├── src/
 │   ├── app/                              # Next.js App Router
 │   │   ├── api/                          # API Routes
