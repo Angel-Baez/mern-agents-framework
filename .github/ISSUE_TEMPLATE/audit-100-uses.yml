@@ -1,0 +1,207 @@
+name: Auditoría de 100 Usos – Framework de Agentes
+description: Evaluación del comportamiento de los 15 agentes durante 100 interacciones reales
+title: "[AUDITORÍA] Ciclo de 100 usos - Fecha: "
+labels: ["audit", "quality"]
+assignees:
+  - Angel-Baez
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 📊 Auditoría de 100 Usos – Framework de 15 Agentes
+        
+        **Objetivo:** 0 violaciones en 100 usos reales
+        
+  - type: checkboxes
+    id: environment
+    attributes:
+      label: Entorno de Prueba
+      description: Selecciona el entorno donde se realizó la auditoría
+      options:
+        - label: VSCode Chat
+        - label: GitHub Copilot Chat
+        
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        ## ❌ Tipos de Violaciones Detectadas
+        
+  - type: checkboxes
+    id: violations
+    attributes:
+      label: Reglas que NO deben romperse
+      description: Marca las violaciones detectadas durante la auditoría
+      options:
+        - label: Uso de herramientas prohibidas
+        - label: Router ejecutó herramientas/código
+        - label: No hizo handoff cuando debía
+        - label: Implementación fuera de scope
+        - label: Inició MCP server sin ser requerido
+        - label: Ignoró metadata/meta-instrucciones
+        - label: Falló verificaciones pre/post
+        
+  - type: textarea
+    id: audit-table
+    attributes:
+      label: 📄 Tabla de Auditoría (100 usos)
+      description: Registra cada uso con formato "Uso | Agente | Resultado (✓/✗) | Observación"
+      placeholder: |
+        1 | orchestrator | ✓ | Handoff correcto a frontend-architect
+        2 | backend-architect | ✗ | Implementó UI fuera de scope
+        3 | frontend-architect | ✓ | Componente implementado correctamente
+        ...
+      value: |
+        | Uso | Agente | Resultado | Observación |
+        |-----|--------|-----------|-------------|
+        | 1   |        | ✓ / ✗     |             |
+        | 2   |        | ✓ / ✗     |             |
+        | 3   |        | ✓ / ✗     |             |
+        | ... | ...    | ...       | ...         |
+        | 100 |        | ✓ / ✗     |             |
+    validations:
+      required: true
+      
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        ## 🔎 Criterios de Evaluación por Rol
+        
+        ### Routers (orchestrator)
+        - ✔ Clasificar solicitudes
+        - ✔ Hacer handoffs
+        - ✗ NO tocar herramientas ni código
+        
+        ### Backend / Data (backend-architect, data-engineer)
+        - ✔ API / lógica de negocio
+        - ✗ NO tocar React / UI
+        
+        ### Frontend (frontend-architect)
+        - ✔ Componentes React / UI
+        - ✗ NO tocar Backend / APIs
+        
+        ### Reviewers (code-reviewer, qa-lead)
+        - ✔ Análisis y feedback
+        - ✗ NO implementar código
+        
+        ### Operaciones (devops-engineer, observability-engineer, release-manager)
+        - ✔ CI/CD / Configuración
+        - ✗ NO implementar features
+        
+        ### Product / Solution (product-manager, solution-architect)
+        - ✔ Documentar y decidir
+        - ✗ NO implementar código
+        
+  - type: input
+    id: total-violations
+    attributes:
+      label: Total de Violaciones
+      description: Número total de fallos detectados (de 0 a 100)
+      placeholder: "0"
+    validations:
+      required: true
+      
+  - type: input
+    id: worst-agent
+    attributes:
+      label: Agente con Más Fallas
+      description: Nombre del agente que tuvo más violaciones
+      placeholder: "orchestrator"
+      
+  - type: dropdown
+    id: problematic-environment
+    attributes:
+      label: Entorno Problemático
+      description: ¿Qué entorno tuvo más problemas?
+      options:
+        - VSCode Chat
+        - GitHub Copilot Chat
+        - Ambos por igual
+        - Ninguno (0 fallas)
+        
+  - type: textarea
+    id: recurring-violation
+    attributes:
+      label: Tipo de Violación Recurrente
+      description: Describe el patrón de violación que más se repitió
+      placeholder: "Ejemplo: Los routers implementaban código en lugar de hacer handoff"
+      
+  - type: markdown
+    attributes:
+      value: |
+        ---
+        
+        ## 📈 Análisis por Agente
+        
+  - type: textarea
+    id: agent-breakdown
+    attributes:
+      label: Desglose de Violaciones por Agente
+      description: "Formato: Agente | Usos | Fallas | % Éxito"
+      placeholder: |
+        orchestrator | 15 usos | 2 fallas | 86.7%
+        backend-architect | 20 usos | 0 fallas | 100%
+        frontend-architect | 18 usos | 1 falla | 94.4%
+        ...
+      value: |
+        | Agente | Usos | Fallas | % Éxito |
+        |--------|------|--------|---------|
+        | orchestrator | | | |
+        | backend-architect | | | |
+        | frontend-architect | | | |
+        | data-engineer | | | |
+        | solution-architect | | | |
+        | security-guardian | | | |
+        | test-engineer | | | |
+        | qa-lead | | | |
+        | code-reviewer | | | |
+        | documentation-engineer | | | |
+        | ai-integration-engineer | | | |
+        | observability-engineer | | | |
+        | product-manager | | | |
+        | release-manager | | | |
+        | devops-engineer | | | |
+        
+  - type: checkboxes
+    id: final-result
+    attributes:
+      label: 🏁 Resultado Final
+      description: Calificación general de la auditoría
+      options:
+        - label: "0 fallos – **A+ Perfecto** (Framework listo para producción)"
+        - label: "1-3 fallos – **Ajuste menor** (Revisar agentes específicos)"
+        - label: "4-10 fallos – **Ajuste moderado** (Refinamiento de prompts)"
+        - label: "11+ fallos – **Revisión profunda** (Re-diseño necesario)"
+          
+  - type: textarea
+    id: recommendations
+    attributes:
+      label: Recomendaciones
+      description: Acciones sugeridas basadas en los resultados
+      placeholder: |
+        - Reforzar meta-instrucciones en orchestrator
+        - Agregar más ejemplos negativos a backend-architect
+        - Actualizar forbidden_tools en frontend-architect
+        
+  - type: textarea
+    id: detailed-failures
+    attributes:
+      label: Detalle de Fallas Críticas
+      description: Descripción detallada de las violaciones más graves
+      placeholder: |
+        **Falla #1:**
+        - Uso: 23
+        - Agente: orchestrator
+        - Solicitud: "implementa autenticación JWT"
+        - Violación: Implementó código en lugar de derivar a backend-architect
+        - Severidad: Alta
+        - Acción correctiva: Agregar este caso a ejemplos negativos
+        
+  - type: textarea
+    id: additional-notes
+    attributes:
+      label: Notas Adicionales
+      description: Cualquier observación adicional relevante
