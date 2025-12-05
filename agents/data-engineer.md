@@ -12,7 +12,8 @@ keywords:
   - agregaciones
   - modelado de datos
 entrypoint: false
-version: "1.0.0"
+version: "1.2.1"
+model: "claude-sonnet-4-5"
 
 # ✨ NUEVO: Configuración de Capacidades
 capabilities:
