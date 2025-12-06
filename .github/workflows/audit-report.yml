@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       issue_number:
-        description: 'Issue number to analyze'
+        description: "Issue number to analyze"
         required: false
         type: number
 
@@ -20,7 +20,7 @@ jobs:
        contains(github.event.issue.labels.*.name, 'audit') &&
        (contains(github.event.issue.title, '[AUDITORÍA]') || 
         contains(github.event.issue.title, 'Auditoría')))
-    
+
     permissions:
       contents: write
       issues: write
@@ -32,8 +32,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'npm'
+          node-version: "20"
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -49,7 +49,7 @@ jobs:
 
       - name: Run audit analyzer
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_ACCESS_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         run: |
           node scripts/audit-analyzer.js --issue ${{ steps.issue.outputs.number }} --output docs/audit-results/latest-analysis.json
 
@@ -69,7 +69,7 @@ jobs:
           VIOLATIONS=$(jq -r '.metadata.totalViolations' docs/audit-results/latest-analysis.json)
           TOTAL_USES=$(jq -r '.metadata.totalUses' docs/audit-results/latest-analysis.json)
           DESCRIPTION=$(jq -r '.globalMetrics.gradeDescription' docs/audit-results/latest-analysis.json)
-          
+
           echo "grade=$GRADE" >> $GITHUB_OUTPUT
           echo "success_rate=$SUCCESS_RATE" >> $GITHUB_OUTPUT
           echo "violations=$VIOLATIONS" >> $GITHUB_OUTPUT
@@ -93,7 +93,7 @@ jobs:
             const violations = '${{ steps.results.outputs.violations }}';
             const totalUses = '${{ steps.results.outputs.total_uses }}';
             const description = '${{ steps.results.outputs.description }}';
-            
+
             const gradeEmoji = {
               'A+': '🏆',
               'A': '🥇',
@@ -101,27 +101,27 @@ jobs:
               'C': '🥉',
               'D': '📉'
             };
-            
+
             const comment = `## ${gradeEmoji[grade] || '📊'} Reporte de Auditoría Generado
-            
+
             | Métrica | Valor |
             |---------|-------|
             | **Calificación** | ${grade} |
             | **Tasa de Éxito** | ${successRate}% |
             | **Violaciones** | ${violations}/${totalUses} |
             | **Estado** | ${description} |
-            
+
             ### 📄 Archivos Generados
-            
+
             - [📊 Dashboard Interactivo](https://angel-baez.github.io/mern-agents-framework/audit-results/)
             - [📝 Reporte Markdown](https://github.com/Angel-Baez/mern-agents-framework/blob/main/docs/audit-results/latest-report.md)
             - [📈 Historial JSON](https://github.com/Angel-Baez/mern-agents-framework/blob/main/docs/audit-results/audit-history.json)
-            
+
             ![Quality Badge](https://raw.githubusercontent.com/Angel-Baez/mern-agents-framework/main/docs/audit-results/badges/quality-badge.svg)
-            
+
             ---
             _Reporte generado automáticamente por [MERN Agents Framework](https://github.com/Angel-Baez/mern-agents-framework)_`;
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
