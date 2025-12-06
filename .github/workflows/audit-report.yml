@@ -1,0 +1,130 @@
+name: Audit Report Generator
+
+on:
+  issues:
+    types: [closed]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: 'Issue number to analyze'
+        required: false
+        type: number
+
+jobs:
+  generate-report:
+    runs-on: ubuntu-latest
+    # Only run for audit issues
+    if: |
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'issues' && 
+       contains(github.event.issue.labels.*.name, 'audit') &&
+       (contains(github.event.issue.title, '[AUDITORÍA]') || 
+        contains(github.event.issue.title, 'Auditoría')))
+    
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Get issue number
+        id: issue
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ -n "${{ inputs.issue_number }}" ]; then
+            echo "number=${{ inputs.issue_number }}" >> $GITHUB_OUTPUT
+          else
+            echo "number=${{ github.event.issue.number }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run audit analyzer
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node scripts/audit-analyzer.js --issue ${{ steps.issue.outputs.number }} --output docs/audit-results/latest-analysis.json
+
+      - name: Generate audit report
+        run: |
+          node scripts/generate-audit-report.js --input docs/audit-results/latest-analysis.json
+
+      - name: Copy dashboard to docs
+        run: |
+          cp scripts/audit-dashboard.html docs/audit-results/index.html
+
+      - name: Read analysis results
+        id: results
+        run: |
+          GRADE=$(jq -r '.globalMetrics.grade' docs/audit-results/latest-analysis.json)
+          SUCCESS_RATE=$(jq -r '.globalMetrics.successRate' docs/audit-results/latest-analysis.json)
+          VIOLATIONS=$(jq -r '.metadata.totalViolations' docs/audit-results/latest-analysis.json)
+          TOTAL_USES=$(jq -r '.metadata.totalUses' docs/audit-results/latest-analysis.json)
+          DESCRIPTION=$(jq -r '.globalMetrics.gradeDescription' docs/audit-results/latest-analysis.json)
+          
+          echo "grade=$GRADE" >> $GITHUB_OUTPUT
+          echo "success_rate=$SUCCESS_RATE" >> $GITHUB_OUTPUT
+          echo "violations=$VIOLATIONS" >> $GITHUB_OUTPUT
+          echo "total_uses=$TOTAL_USES" >> $GITHUB_OUTPUT
+          echo "description=$DESCRIPTION" >> $GITHUB_OUTPUT
+
+      - name: Commit and push results
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add docs/audit-results/
+          git diff --staged --quiet || (git commit -m "📊 Update audit report for issue #${{ steps.issue.outputs.number }}" && git push)
+
+      - name: Comment on issue
+        if: github.event_name == 'issues'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const grade = '${{ steps.results.outputs.grade }}';
+            const successRate = '${{ steps.results.outputs.success_rate }}';
+            const violations = '${{ steps.results.outputs.violations }}';
+            const totalUses = '${{ steps.results.outputs.total_uses }}';
+            const description = '${{ steps.results.outputs.description }}';
+            
+            const gradeEmoji = {
+              'A+': '🏆',
+              'A': '🥇',
+              'B': '🥈',
+              'C': '🥉',
+              'D': '📉'
+            };
+            
+            const comment = `## ${gradeEmoji[grade] || '📊'} Reporte de Auditoría Generado
+            
+            | Métrica | Valor |
+            |---------|-------|
+            | **Calificación** | ${grade} |
+            | **Tasa de Éxito** | ${successRate}% |
+            | **Violaciones** | ${violations}/${totalUses} |
+            | **Estado** | ${description} |
+            
+            ### 📄 Archivos Generados
+            
+            - [📊 Dashboard Interactivo](https://angel-baez.github.io/mern-agents-framework/audit-results/)
+            - [📝 Reporte Markdown](https://github.com/Angel-Baez/mern-agents-framework/blob/main/docs/audit-results/latest-report.md)
+            - [📈 Historial JSON](https://github.com/Angel-Baez/mern-agents-framework/blob/main/docs/audit-results/audit-history.json)
+            
+            ![Quality Badge](https://raw.githubusercontent.com/Angel-Baez/mern-agents-framework/main/docs/audit-results/badges/quality-badge.svg)
+            
+            ---
+            _Reporte generado automáticamente por [MERN Agents Framework](https://github.com/Angel-Baez/mern-agents-framework)_`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.issue.outputs.number }},
+              body: comment
+            });

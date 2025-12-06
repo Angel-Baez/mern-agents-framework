@@ -1,0 +1,19 @@
+{
+  "audits": [
+    {
+      "auditId": "audit-1",
+      "issueNumber": 1,
+      "date": "2025-12-06",
+      "environment": "github",
+      "successRate": 80,
+      "violations": 2,
+      "grade": "C",
+      "totalUses": 10
+    }
+  ],
+  "summary": {
+    "totalAudits": 1,
+    "averageSuccessRate": 80,
+    "lastUpdated": "2025-12-06T01:46:37.323Z"
+  }
+}

@@ -1,0 +1,236 @@
+{
+  "metadata": {
+    "auditId": "audit-1",
+    "issueNumber": 1,
+    "date": "2025-12-06",
+    "closedAt": null,
+    "environment": "github",
+    "totalUses": 10,
+    "totalViolations": 2,
+    "generatedAt": "2025-12-06T01:46:37.262Z"
+  },
+  "globalMetrics": {
+    "successRate": 80,
+    "violationRate": 20,
+    "grade": "C",
+    "gradeDescription": "Revisión necesaria - Mejorar varios agentes",
+    "gradeColor": "#f97316",
+    "badgeColor": "orange"
+  },
+  "agentMetrics": [
+    {
+      "name": "orchestrator",
+      "displayName": "Orchestrator",
+      "role": "router",
+      "uses": 3,
+      "violations": 1,
+      "successRate": 66.7,
+      "violationDetails": [
+        "Implementó código en lugar de hacer handoff"
+      ]
+    },
+    {
+      "name": "backend-architect",
+      "displayName": "Backend Architect",
+      "role": "implementer",
+      "uses": 2,
+      "violations": 0,
+      "successRate": 100,
+      "violationDetails": []
+    },
+    {
+      "name": "frontend-architect",
+      "displayName": "Frontend Architect",
+      "role": "implementer",
+      "uses": 2,
+      "violations": 1,
+      "successRate": 50,
+      "violationDetails": [
+        "Implementó lógica de backend"
+      ]
+    },
+    {
+      "name": "data-engineer",
+      "displayName": "Data Engineer",
+      "role": "implementer",
+      "uses": 1,
+      "violations": 0,
+      "successRate": 100,
+      "violationDetails": []
+    },
+    {
+      "name": "security-guardian",
+      "displayName": "Security Guardian",
+      "role": "reviewer",
+      "uses": 1,
+      "violations": 0,
+      "successRate": 100,
+      "violationDetails": []
+    },
+    {
+      "name": "test-engineer",
+      "displayName": "Test Engineer",
+      "role": "implementer",
+      "uses": 1,
+      "violations": 0,
+      "successRate": 100,
+      "violationDetails": []
+    }
+  ],
+  "environmentComparison": {
+    "github": {
+      "name": "GitHub Copilot Chat",
+      "uses": 10,
+      "violations": 2,
+      "successRate": 80
+    }
+  },
+  "violationBreakdown": {
+    "used_prohibited_tools": 0,
+    "implemented_code": 2,
+    "no_handoff": 0,
+    "out_of_scope": 0,
+    "started_mcp_server": 0,
+    "ignored_metadata": 0,
+    "failed_verification": 0
+  },
+  "topAgents": [
+    {
+      "name": "backend-architect",
+      "displayName": "Backend Architect",
+      "successRate": 100,
+      "uses": 2
+    },
+    {
+      "name": "data-engineer",
+      "displayName": "Data Engineer",
+      "successRate": 100,
+      "uses": 1
+    },
+    {
+      "name": "security-guardian",
+      "displayName": "Security Guardian",
+      "successRate": 100,
+      "uses": 1
+    },
+    {
+      "name": "test-engineer",
+      "displayName": "Test Engineer",
+      "successRate": 100,
+      "uses": 1
+    },
+    {
+      "name": "orchestrator",
+      "displayName": "Orchestrator",
+      "successRate": 66.7,
+      "uses": 3
+    }
+  ],
+  "bottomAgents": [
+    {
+      "name": "frontend-architect",
+      "displayName": "Frontend Architect",
+      "successRate": 50,
+      "uses": 2,
+      "violations": 1
+    },
+    {
+      "name": "orchestrator",
+      "displayName": "Orchestrator",
+      "successRate": 66.7,
+      "uses": 3,
+      "violations": 1
+    },
+    {
+      "name": "test-engineer",
+      "displayName": "Test Engineer",
+      "successRate": 100,
+      "uses": 1,
+      "violations": 0
+    },
+    {
+      "name": "security-guardian",
+      "displayName": "Security Guardian",
+      "successRate": 100,
+      "uses": 1,
+      "violations": 0
+    },
+    {
+      "name": "data-engineer",
+      "displayName": "Data Engineer",
+      "successRate": 100,
+      "uses": 1,
+      "violations": 0
+    }
+  ],
+  "timeline": [
+    {
+      "date": "2025-12-06T01:46:37.260Z",
+      "successRate": 80,
+      "violations": 2,
+      "environment": "github"
+    }
+  ],
+  "rawAuditData": [
+    {
+      "use": 1,
+      "agent": "orchestrator",
+      "success": true,
+      "observation": "Handoff correcto a frontend-architect"
+    },
+    {
+      "use": 2,
+      "agent": "backend-architect",
+      "success": true,
+      "observation": "Endpoint creado correctamente"
+    },
+    {
+      "use": 3,
+      "agent": "frontend-architect",
+      "success": true,
+      "observation": "Componente implementado"
+    },
+    {
+      "use": 4,
+      "agent": "orchestrator",
+      "success": false,
+      "observation": "Implementó código en lugar de hacer handoff"
+    },
+    {
+      "use": 5,
+      "agent": "data-engineer",
+      "success": true,
+      "observation": "Esquema diseñado correctamente"
+    },
+    {
+      "use": 6,
+      "agent": "security-guardian",
+      "success": true,
+      "observation": "Revisión de seguridad completada"
+    },
+    {
+      "use": 7,
+      "agent": "test-engineer",
+      "success": true,
+      "observation": "Tests unitarios creados"
+    },
+    {
+      "use": 8,
+      "agent": "backend-architect",
+      "success": true,
+      "observation": "API REST implementada"
+    },
+    {
+      "use": 9,
+      "agent": "orchestrator",
+      "success": true,
+      "observation": "Derivación correcta"
+    },
+    {
+      "use": 10,
+      "agent": "frontend-architect",
+      "success": false,
+      "observation": "Implementó lógica de backend"
+    }
+  ]
+}

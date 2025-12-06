@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Auditoría - MERN Agents Framework</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#3B82F6',
+            success: '#22C55E',
+            warning: '#EAB308',
+            danger: '#EF4444'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+    .dark .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2); }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-200">
+  <!-- Header -->
+  <header class="gradient-bg text-white py-6 px-4 md:px-8">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+      <div>
+        <h1 class="text-2xl md:text-3xl font-bold">📊 Dashboard de Auditoría</h1>
+        <p class="text-purple-100 mt-1">MERN Agents Framework - Análisis de 100 Usos</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="darkModeToggle" class="p-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors">
+          <span id="darkIcon" class="hidden">🌙</span>
+          <span id="lightIcon">☀️</span>
+        </button>
+        <button id="exportPdf" class="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors">
+          📥 Exportar PDF
+        </button>
+        <button id="loadData" class="px-4 py-2 bg-white text-purple-600 font-medium rounded-lg hover:bg-purple-50 transition-colors">
+          🔄 Cargar Datos
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Filters -->
+  <div class="max-w-7xl mx-auto px-4 md:px-8 py-4">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-4 card-shadow">
+      <div class="flex flex-wrap gap-4 items-center">
+        <div>
+          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Entorno</label>
+          <select id="filterEnvironment" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+            <option value="all">Todos</option>
+            <option value="vscode">VSCode Chat</option>
+            <option value="github">GitHub Copilot Chat</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Umbral de Éxito</label>
+          <select id="filterThreshold" class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+            <option value="0">Todos los agentes</option>
+            <option value="90">≥ 90% éxito</option>
+            <option value="80">≥ 80% éxito</option>
+            <option value="70">≥ 70% éxito</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Buscar Agente</label>
+          <input type="text" id="searchAgent" placeholder="Buscar..." class="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+        </div>
+        <div class="ml-auto">
+          <label class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">Vista</label>
+          <div class="flex rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600">
+            <button id="viewTable" class="px-3 py-2 bg-primary text-white">📋 Tabla</button>
+            <button id="viewChart" class="px-3 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600">📊 Gráficos</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 md:px-8 py-4">
+    <!-- Overview Section -->
+    <section id="overview" class="mb-8">
+      <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">📈 Resumen General</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <!-- Success Rate Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 card-shadow">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Tasa de Éxito</p>
+              <p id="successRate" class="text-3xl font-bold text-success">--%</p>
+            </div>
+            <div class="w-16 h-16">
+              <canvas id="successGauge"></canvas>
+            </div>
+          </div>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-2">Meta: 100%</p>
+        </div>
+        
+        <!-- Grade Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 card-shadow">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Calificación</p>
+          <p id="grade" class="text-4xl font-bold text-primary mt-1">--</p>
+          <p id="gradeDescription" class="text-sm text-gray-500 dark:text-gray-400 mt-2">-</p>
+        </div>
+        
+        <!-- Violations Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 card-shadow">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Violaciones</p>
+          <p id="violations" class="text-3xl font-bold text-danger">--</p>
+          <p id="totalUses" class="text-sm text-gray-500 dark:text-gray-400 mt-2">de -- usos</p>
+        </div>
+        
+        <!-- Environment Card -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 card-shadow">
+          <p class="text-sm text-gray-500 dark:text-gray-400">Entorno</p>
+          <p id="environment" class="text-xl font-bold text-gray-800 dark:text-white mt-1">--</p>
+          <p id="auditDate" class="text-sm text-gray-500 dark:text-gray-400 mt-2">--</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Agents Section -->
+    <section id="agents" class="mb-8">
+      <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">👥 Rendimiento por Agente</h2>
+      
+      <!-- Chart View -->
+      <div id="agentChartView" class="bg-white dark:bg-gray-800 rounded-xl p-6 card-shadow hidden">
+        <canvas id="agentBarChart" height="400"></canvas>
+      </div>
+      
+      <!-- Table View -->
+      <div id="agentTableView" class="bg-white dark:bg-gray-800 rounded-xl card-shadow overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="w-full">
+            <thead class="bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Agente</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Rol</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Usos</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Violaciones</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">% Éxito</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
+              </tr>
+            </thead>
+            <tbody id="agentTableBody" class="divide-y divide-gray-200 dark:divide-gray-700">
+              <!-- Dynamic content -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Two Column Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Violations Breakdown -->
+      <section id="violations-section">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">❌ Tipos de Violación</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 card-shadow">
+          <canvas id="violationPieChart" height="300"></canvas>
+          <div id="violationLegend" class="mt-4 space-y-2">
+            <!-- Dynamic content -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Environment Comparison -->
+      <section id="environment-section">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">🖥️ Comparación de Entornos</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-6 card-shadow">
+          <canvas id="environmentChart" height="300"></canvas>
+          <div id="environmentStats" class="mt-4 grid grid-cols-2 gap-4">
+            <!-- Dynamic content -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Top/Bottom Agents -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Top 5 -->
+      <section id="top-agents">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">🏆 Top 5 Agentes</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl card-shadow overflow-hidden">
+          <div id="topAgentsList" class="divide-y divide-gray-200 dark:divide-gray-700">
+            <!-- Dynamic content -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Bottom 5 -->
+      <section id="bottom-agents">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">⚠️ Agentes que Necesitan Mejora</h2>
+        <div class="bg-white dark:bg-gray-800 rounded-xl card-shadow overflow-hidden">
+          <div id="bottomAgentsList" class="divide-y divide-gray-200 dark:divide-gray-700">
+            <!-- Dynamic content -->
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Timeline Section -->
+    <section id="timeline" class="mb-8">
+      <h2 class="text-xl font-bold text-gray-800 dark:text-white mb-4">📅 Evolución Histórica</h2>
+      <div class="bg-white dark:bg-gray-800 rounded-xl p-6 card-shadow">
+        <canvas id="timelineChart" height="200"></canvas>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-100 dark:bg-gray-800 py-6 px-4">
+    <div class="max-w-7xl mx-auto text-center">
+      <p class="text-gray-600 dark:text-gray-400">
+        MERN Agents Framework - Dashboard de Auditoría
+      </p>
+      <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">
+        <a href="https://github.com/Angel-Baez/mern-agents-framework" class="hover:underline" target="_blank">
+          GitHub Repository
+        </a>
+      </p>
+    </div>
+  </footer>
+
+  <!-- Data Input Modal -->
+  <div id="dataModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+    <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-auto">
+      <h3 class="text-xl font-bold text-gray-800 dark:text-white mb-4">📂 Cargar Datos de Auditoría</h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-4">
+        Pega el JSON de análisis generado por <code class="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">audit-analyzer.js</code>
+      </p>
+      <textarea id="dataInput" class="w-full h-64 p-4 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-mono text-sm" placeholder="Pega el JSON aquí..."></textarea>
+      <div class="flex justify-end gap-4 mt-4">
+        <button id="cancelData" class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">
+          Cancelar
+        </button>
+        <button id="loadFromFile" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600">
+          📁 Cargar Archivo
+        </button>
+        <button id="submitData" class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600">
+          ✓ Cargar Datos
+        </button>
+      </div>
+      <input type="file" id="fileInput" class="hidden" accept=".json">
+    </div>
+  </div>
+
+  <script>
+    // Sample data for demonstration
+    const sampleData = {
+      metadata: {
+        auditId: "audit-001",
+        issueNumber: 1,
+        date: "2024-12-05",
+        environment: "github",
+        totalUses: 100,
+        totalViolations: 3,
+        generatedAt: new Date().toISOString()
+      },
+      globalMetrics: {
+        successRate: 97.0,
+        violationRate: 3.0,
+        grade: "A",
+        gradeDescription: "Ajuste menor - Revisar agentes específicos",
+        gradeColor: "#84cc16",
+        badgeColor: "green"
+      },
+      agentMetrics: [
+        { name: "orchestrator", displayName: "Orchestrator", role: "router", uses: 15, violations: 2, successRate: 86.7 },
+        { name: "backend-architect", displayName: "Backend Architect", role: "implementer", uses: 20, violations: 0, successRate: 100 },
+        { name: "frontend-architect", displayName: "Frontend Architect", role: "implementer", uses: 18, violations: 1, successRate: 94.4 },
+        { name: "data-engineer", displayName: "Data Engineer", role: "implementer", uses: 10, violations: 0, successRate: 100 },
+        { name: "solution-architect", displayName: "Solution Architect", role: "advisor", uses: 8, violations: 0, successRate: 100 },
+        { name: "security-guardian", displayName: "Security Guardian", role: "reviewer", uses: 7, violations: 0, successRate: 100 },
+        { name: "test-engineer", displayName: "Test Engineer", role: "implementer", uses: 6, violations: 0, successRate: 100 },
+        { name: "qa-lead", displayName: "QA Lead", role: "reviewer", uses: 5, violations: 0, successRate: 100 },
+        { name: "code-reviewer", displayName: "Code Reviewer", role: "reviewer", uses: 4, violations: 0, successRate: 100 },
+        { name: "devops-engineer", displayName: "DevOps Engineer", role: "implementer", uses: 3, violations: 0, successRate: 100 },
+        { name: "documentation-engineer", displayName: "Documentation Engineer", role: "implementer", uses: 2, violations: 0, successRate: 100 },
+        { name: "observability-engineer", displayName: "Observability Engineer", role: "implementer", uses: 1, violations: 0, successRate: 100 },
+        { name: "release-manager", displayName: "Release Manager", role: "implementer", uses: 1, violations: 0, successRate: 100 }
+      ],
+      environmentComparison: {
+        vscode: { name: "VSCode Chat", uses: 45, violations: 0, successRate: 100 },
+        github: { name: "GitHub Copilot Chat", uses: 55, violations: 3, successRate: 94.5 }
+      },
+      violationBreakdown: {
+        implemented_code: 2,
+        used_prohibited_tools: 1,
+        no_handoff: 0,
+        out_of_scope: 0,
+        started_mcp_server: 0,
+        ignored_metadata: 0,
+        failed_verification: 0
+      },
+      topAgents: [
+        { name: "backend-architect", displayName: "Backend Architect", successRate: 100, uses: 20 },
+        { name: "data-engineer", displayName: "Data Engineer", successRate: 100, uses: 10 },
+        { name: "solution-architect", displayName: "Solution Architect", successRate: 100, uses: 8 },
+        { name: "security-guardian", displayName: "Security Guardian", successRate: 100, uses: 7 },
+        { name: "test-engineer", displayName: "Test Engineer", successRate: 100, uses: 6 }
+      ],
+      bottomAgents: [
+        { name: "orchestrator", displayName: "Orchestrator", successRate: 86.7, uses: 15, violations: 2 },
+        { name: "frontend-architect", displayName: "Frontend Architect", successRate: 94.4, uses: 18, violations: 1 }
+      ],
+      timeline: [
+        { date: "2024-11-01", successRate: 92, violations: 8, environment: "vscode" },
+        { date: "2024-11-15", successRate: 95, violations: 5, environment: "github" },
+        { date: "2024-12-01", successRate: 97, violations: 3, environment: "github" }
+      ]
+    };
+
+    // Chart instances
+    let gaugeChart, barChart, pieChart, envChart, timelineChartInstance;
+
+    // Current data
+    let currentData = sampleData;
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', () => {
+      initCharts();
+      updateDashboard(currentData);
+      setupEventListeners();
+    });
+
+    // Initialize charts
+    function initCharts() {
+      // Success Gauge
+      const gaugeCtx = document.getElementById('successGauge').getContext('2d');
+      gaugeChart = new Chart(gaugeCtx, {
+        type: 'doughnut',
+        data: {
+          datasets: [{
+            data: [97, 3],
+            backgroundColor: ['#22C55E', '#E5E7EB'],
+            borderWidth: 0
+          }]
+        },
+        options: {
+          cutout: '70%',
+          plugins: { legend: { display: false }, tooltip: { enabled: false } }
+        }
+      });
+
+      // Agent Bar Chart
+      const barCtx = document.getElementById('agentBarChart').getContext('2d');
+      barChart = new Chart(barCtx, {
+        type: 'bar',
+        data: {
+          labels: [],
+          datasets: [{
+            label: '% Éxito',
+            data: [],
+            backgroundColor: '#3B82F6',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          indexAxis: 'y',
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            x: { max: 100, grid: { color: 'rgba(0,0,0,0.1)' } },
+            y: { grid: { display: false } }
+          }
+        }
+      });
+
+      // Violation Pie Chart
+      const pieCtx = document.getElementById('violationPieChart').getContext('2d');
+      pieChart = new Chart(pieCtx, {
+        type: 'pie',
+        data: {
+          labels: [],
+          datasets: [{
+            data: [],
+            backgroundColor: ['#EF4444', '#F97316', '#EAB308', '#22C55E', '#3B82F6', '#8B5CF6', '#EC4899']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'bottom' }
+          }
+        }
+      });
+
+      // Environment Chart
+      const envCtx = document.getElementById('environmentChart').getContext('2d');
+      envChart = new Chart(envCtx, {
+        type: 'bar',
+        data: {
+          labels: ['VSCode Chat', 'GitHub Copilot Chat'],
+          datasets: [{
+            label: '% Éxito',
+            data: [100, 94.5],
+            backgroundColor: ['#3B82F6', '#8B5CF6']
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { max: 100 }
+          }
+        }
+      });
+
+      // Timeline Chart
+      const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+      timelineChartInstance = new Chart(timelineCtx, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: '% Éxito',
+            data: [],
+            borderColor: '#3B82F6',
+            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+            fill: true,
+            tension: 0.4
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: { position: 'top' }
+          },
+          scales: {
+            y: { min: 80, max: 100 }
+          }
+        }
+      });
+    }
+
+    // Update dashboard with data
+    function updateDashboard(data) {
+      currentData = data;
+
+      // Update overview cards
+      document.getElementById('successRate').textContent = data.globalMetrics.successRate + '%';
+      document.getElementById('grade').textContent = data.globalMetrics.grade;
+      document.getElementById('gradeDescription').textContent = data.globalMetrics.gradeDescription;
+      document.getElementById('violations').textContent = data.metadata.totalViolations;
+      document.getElementById('totalUses').textContent = `de ${data.metadata.totalUses} usos`;
+      
+      const envName = data.metadata.environment === 'vscode' ? 'VSCode Chat' : 
+                      data.metadata.environment === 'github' ? 'GitHub Copilot Chat' : data.metadata.environment;
+      document.getElementById('environment').textContent = envName;
+      document.getElementById('auditDate').textContent = data.metadata.date;
+
+      // Update gauge
+      gaugeChart.data.datasets[0].data = [data.globalMetrics.successRate, data.globalMetrics.violationRate];
+      gaugeChart.data.datasets[0].backgroundColor[0] = data.globalMetrics.gradeColor || '#22C55E';
+      gaugeChart.update();
+
+      // Update agent bar chart
+      const sortedAgents = [...data.agentMetrics].sort((a, b) => b.successRate - a.successRate);
+      barChart.data.labels = sortedAgents.map(a => a.displayName || a.name);
+      barChart.data.datasets[0].data = sortedAgents.map(a => a.successRate);
+      barChart.data.datasets[0].backgroundColor = sortedAgents.map(a => 
+        a.successRate >= 100 ? '#22C55E' : a.successRate >= 90 ? '#84CC16' : a.successRate >= 80 ? '#EAB308' : '#EF4444'
+      );
+      barChart.update();
+
+      // Update agent table
+      updateAgentTable(data.agentMetrics);
+
+      // Update violation pie chart
+      const violations = Object.entries(data.violationBreakdown).filter(([, v]) => v > 0);
+      if (violations.length > 0) {
+        pieChart.data.labels = violations.map(([k]) => formatViolationType(k));
+        pieChart.data.datasets[0].data = violations.map(([, v]) => v);
+      } else {
+        pieChart.data.labels = ['Sin violaciones'];
+        pieChart.data.datasets[0].data = [1];
+        pieChart.data.datasets[0].backgroundColor = ['#22C55E'];
+      }
+      pieChart.update();
+
+      // Update environment chart
+      if (data.environmentComparison) {
+        const envs = Object.values(data.environmentComparison);
+        envChart.data.labels = envs.map(e => e.name);
+        envChart.data.datasets[0].data = envs.map(e => e.successRate);
+        envChart.update();
+
+        // Update environment stats
+        const envStats = document.getElementById('environmentStats');
+        envStats.innerHTML = envs.map(env => `
+          <div class="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+            <p class="text-sm text-gray-500 dark:text-gray-400">${env.name}</p>
+            <p class="text-xl font-bold ${env.successRate >= 95 ? 'text-success' : 'text-warning'}">${env.successRate}%</p>
+            <p class="text-xs text-gray-400">${env.uses} usos, ${env.violations} violaciones</p>
+          </div>
+        `).join('');
+      }
+
+      // Update top/bottom agents
+      updateTopBottomAgents(data);
+
+      // Update timeline
+      if (data.timeline && data.timeline.length > 0) {
+        timelineChartInstance.data.labels = data.timeline.map(t => t.date);
+        timelineChartInstance.data.datasets[0].data = data.timeline.map(t => t.successRate);
+        timelineChartInstance.update();
+      }
+    }
+
+    // Update agent table
+    function updateAgentTable(agents) {
+      const tbody = document.getElementById('agentTableBody');
+      tbody.innerHTML = agents.map(agent => `
+        <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer" onclick="filterByAgent('${agent.name}')">
+          <td class="px-6 py-4 whitespace-nowrap">
+            <div class="font-medium text-gray-900 dark:text-white">${agent.displayName || agent.name}</div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap">
+            <span class="px-2 py-1 text-xs rounded-full ${
+              agent.role === 'router' ? 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200' :
+              agent.role === 'implementer' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200' :
+              agent.role === 'reviewer' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200' :
+              'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+            }">${agent.role}</span>
+          </td>
+          <td class="px-6 py-4 text-center text-gray-900 dark:text-white">${agent.uses}</td>
+          <td class="px-6 py-4 text-center ${agent.violations > 0 ? 'text-danger font-bold' : 'text-gray-900 dark:text-white'}">${agent.violations}</td>
+          <td class="px-6 py-4 text-center">
+            <div class="flex items-center justify-center gap-2">
+              <div class="w-20 bg-gray-200 dark:bg-gray-600 rounded-full h-2">
+                <div class="h-2 rounded-full ${
+                  agent.successRate >= 100 ? 'bg-success' : agent.successRate >= 90 ? 'bg-lime-500' : agent.successRate >= 80 ? 'bg-warning' : 'bg-danger'
+                }" style="width: ${agent.successRate}%"></div>
+              </div>
+              <span class="text-gray-900 dark:text-white">${agent.successRate.toFixed(1)}%</span>
+            </div>
+          </td>
+          <td class="px-6 py-4 text-center">
+            ${agent.successRate >= 100 ? '✅' : agent.successRate >= 90 ? '⚠️' : '❌'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Update top/bottom agents lists
+    function updateTopBottomAgents(data) {
+      const topList = document.getElementById('topAgentsList');
+      topList.innerHTML = data.topAgents.map((agent, i) => `
+        <div class="px-6 py-4 flex items-center gap-4">
+          <span class="text-2xl">${['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][i]}</span>
+          <div class="flex-1">
+            <p class="font-medium text-gray-900 dark:text-white">${agent.displayName || agent.name}</p>
+            <p class="text-sm text-gray-500">${agent.uses} usos</p>
+          </div>
+          <span class="text-lg font-bold text-success">${agent.successRate}%</span>
+        </div>
+      `).join('');
+
+      const bottomList = document.getElementById('bottomAgentsList');
+      if (data.bottomAgents.filter(a => a.successRate < 100).length > 0) {
+        bottomList.innerHTML = data.bottomAgents.filter(a => a.successRate < 100).map(agent => `
+          <div class="px-6 py-4 flex items-center gap-4">
+            <span class="text-2xl">⚠️</span>
+            <div class="flex-1">
+              <p class="font-medium text-gray-900 dark:text-white">${agent.displayName || agent.name}</p>
+              <p class="text-sm text-gray-500">${agent.violations} violaciones en ${agent.uses} usos</p>
+            </div>
+            <span class="text-lg font-bold ${agent.successRate >= 90 ? 'text-warning' : 'text-danger'}">${agent.successRate}%</span>
+          </div>
+        `).join('');
+      } else {
+        bottomList.innerHTML = `
+          <div class="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
+            ✅ Todos los agentes tienen 100% de éxito
+          </div>
+        `;
+      }
+    }
+
+    // Format violation type
+    function formatViolationType(type) {
+      const names = {
+        'implemented_code': 'Implementó código',
+        'used_prohibited_tools': 'Herramientas prohibidas',
+        'no_handoff': 'Sin handoff',
+        'out_of_scope': 'Fuera de scope',
+        'started_mcp_server': 'MCP server',
+        'ignored_metadata': 'Ignoró metadata',
+        'failed_verification': 'Falló verificación'
+      };
+      return names[type] || type;
+    }
+
+    // Filter by agent
+    function filterByAgent(agentName) {
+      document.getElementById('searchAgent').value = agentName;
+      applyFilters();
+    }
+
+    // Apply filters
+    function applyFilters() {
+      const search = document.getElementById('searchAgent').value.toLowerCase();
+      const threshold = parseInt(document.getElementById('filterThreshold').value);
+      
+      const filtered = currentData.agentMetrics.filter(agent => {
+        const matchesSearch = !search || 
+          agent.name.toLowerCase().includes(search) || 
+          (agent.displayName || '').toLowerCase().includes(search);
+        const matchesThreshold = agent.successRate >= threshold;
+        return matchesSearch && matchesThreshold;
+      });
+      
+      updateAgentTable(filtered);
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Dark mode toggle
+      document.getElementById('darkModeToggle').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        const isDark = document.documentElement.classList.contains('dark');
+        document.getElementById('darkIcon').classList.toggle('hidden', !isDark);
+        document.getElementById('lightIcon').classList.toggle('hidden', isDark);
+      });
+
+      // View toggle
+      document.getElementById('viewTable').addEventListener('click', () => {
+        document.getElementById('agentTableView').classList.remove('hidden');
+        document.getElementById('agentChartView').classList.add('hidden');
+        document.getElementById('viewTable').classList.add('bg-primary', 'text-white');
+        document.getElementById('viewTable').classList.remove('bg-white', 'dark:bg-gray-700');
+        document.getElementById('viewChart').classList.remove('bg-primary', 'text-white');
+        document.getElementById('viewChart').classList.add('bg-white', 'dark:bg-gray-700');
+      });
+
+      document.getElementById('viewChart').addEventListener('click', () => {
+        document.getElementById('agentChartView').classList.remove('hidden');
+        document.getElementById('agentTableView').classList.add('hidden');
+        document.getElementById('viewChart').classList.add('bg-primary', 'text-white');
+        document.getElementById('viewChart').classList.remove('bg-white', 'dark:bg-gray-700');
+        document.getElementById('viewTable').classList.remove('bg-primary', 'text-white');
+        document.getElementById('viewTable').classList.add('bg-white', 'dark:bg-gray-700');
+      });
+
+      // Filters
+      document.getElementById('searchAgent').addEventListener('input', applyFilters);
+      document.getElementById('filterThreshold').addEventListener('change', applyFilters);
+
+      // Load data modal
+      document.getElementById('loadData').addEventListener('click', () => {
+        document.getElementById('dataModal').classList.remove('hidden');
+        document.getElementById('dataModal').classList.add('flex');
+      });
+
+      document.getElementById('cancelData').addEventListener('click', () => {
+        document.getElementById('dataModal').classList.add('hidden');
+        document.getElementById('dataModal').classList.remove('flex');
+      });
+
+      document.getElementById('submitData').addEventListener('click', () => {
+        try {
+          const data = JSON.parse(document.getElementById('dataInput').value);
+          updateDashboard(data);
+          document.getElementById('dataModal').classList.add('hidden');
+          document.getElementById('dataModal').classList.remove('flex');
+        } catch (e) {
+          alert('Error parsing JSON: ' + e.message);
+        }
+      });
+
+      document.getElementById('loadFromFile').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+      });
+
+      document.getElementById('fileInput').addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            document.getElementById('dataInput').value = event.target.result;
+          };
+          reader.readAsText(file);
+        }
+      });
+
+      // Export PDF
+      document.getElementById('exportPdf').addEventListener('click', () => {
+        window.print();
+      });
+    }
+  </script>
+</body>
+</html>

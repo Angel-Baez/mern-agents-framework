@@ -1,0 +1,244 @@
+{
+  "agents": [
+    {
+      "id": "orchestrator",
+      "name": "Orchestrator",
+      "role": "router",
+      "description": "Punto de entrada principal. Analiza solicitudes y recomienda el agente especializado apropiado",
+      "allowedCapabilities": ["analyze", "route", "classify", "coordinate", "delegate"],
+      "forbiddenTools": ["read_file", "write_file", "edit_file", "create_file", "run_command", "execute_code"],
+      "forbiddenActions": ["implementar código", "modificar archivos", "ejecutar comandos"]
+    },
+    {
+      "id": "backend-architect",
+      "name": "Backend Architect",
+      "role": "implementer",
+      "description": "API Routes Next.js, MongoDB, Services/Repositories, SOLID",
+      "allowedCapabilities": ["implement_backend", "api_design", "database_logic"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["tocar React/UI", "modificar componentes frontend"]
+    },
+    {
+      "id": "frontend-architect",
+      "name": "Frontend Architect",
+      "role": "implementer",
+      "description": "Componentes React, Tailwind, accesibilidad WCAG 2.1 AA",
+      "allowedCapabilities": ["implement_frontend", "ui_design", "accessibility"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["tocar Backend/APIs", "modificar endpoints"]
+    },
+    {
+      "id": "data-engineer",
+      "name": "Data Engineer",
+      "role": "implementer",
+      "description": "Esquemas Mongoose, migraciones, índices, agregaciones",
+      "allowedCapabilities": ["schema_design", "database_optimization", "migrations"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["implementar lógica de negocio", "crear UI"]
+    },
+    {
+      "id": "solution-architect",
+      "name": "Solution Architect",
+      "role": "advisor",
+      "description": "ADRs, diagramas C4, evaluación de tecnologías",
+      "allowedCapabilities": ["architecture_design", "documentation", "decision_making"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["implementar código directamente"]
+    },
+    {
+      "id": "security-guardian",
+      "name": "Security Guardian",
+      "role": "reviewer",
+      "description": "OWASP Top 10, validación Zod, rate limiting, CSP",
+      "allowedCapabilities": ["security_review", "vulnerability_assessment", "implement_security"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["implementar features de negocio"]
+    },
+    {
+      "id": "test-engineer",
+      "name": "Test Engineer",
+      "role": "implementer",
+      "description": "Jest/Vitest, React Testing Library, mocks, E2E",
+      "allowedCapabilities": ["write_tests", "test_strategy", "mocking"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["implementar código de producción"]
+    },
+    {
+      "id": "qa-lead",
+      "name": "QA Lead",
+      "role": "reviewer",
+      "description": "Estrategia QA, checklists de release, gestión de bugs",
+      "allowedCapabilities": ["quality_strategy", "review", "checklist_creation"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["implementar código", "escribir tests automáticos"]
+    },
+    {
+      "id": "code-reviewer",
+      "name": "Code Reviewer",
+      "role": "reviewer",
+      "description": "Estándares TypeScript, checklists de review, feedback",
+      "allowedCapabilities": ["code_review", "feedback", "best_practices"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["implementar código directamente"]
+    },
+    {
+      "id": "documentation-engineer",
+      "name": "Documentation Engineer",
+      "role": "implementer",
+      "description": "API docs OpenAPI, README, guías de onboarding",
+      "allowedCapabilities": ["documentation", "api_specs", "guides"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["implementar código de producción"]
+    },
+    {
+      "id": "ai-integration-engineer",
+      "name": "AI Integration Engineer",
+      "role": "implementer",
+      "description": "OpenAI/Gemini/Anthropic, prompts, fallbacks",
+      "allowedCapabilities": ["ai_integration", "prompt_engineering", "model_selection"],
+      "forbiddenTools": [],
+      "forbiddenActions": []
+    },
+    {
+      "id": "observability-engineer",
+      "name": "Observability Engineer",
+      "role": "implementer",
+      "description": "Lighthouse, Core Web Vitals, logging estructurado",
+      "allowedCapabilities": ["monitoring", "metrics", "logging", "performance"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["implementar features de negocio"]
+    },
+    {
+      "id": "product-manager",
+      "name": "Product Manager",
+      "role": "advisor",
+      "description": "User stories, criterios de aceptación META, KPIs y roadmap",
+      "allowedCapabilities": ["requirements", "prioritization", "user_stories"],
+      "forbiddenTools": ["read_file", "write_file", "edit_file", "run_command"],
+      "forbiddenActions": ["implementar código"]
+    },
+    {
+      "id": "release-manager",
+      "name": "Release Manager",
+      "role": "implementer",
+      "description": "SemVer, changelogs, tags, GitHub Releases",
+      "allowedCapabilities": ["versioning", "releases", "changelogs"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["implementar features"]
+    },
+    {
+      "id": "devops-engineer",
+      "name": "DevOps Engineer",
+      "role": "implementer",
+      "description": "GitHub Actions, Vercel, workflows CI/CD",
+      "allowedCapabilities": ["ci_cd", "deployment", "infrastructure"],
+      "forbiddenTools": [],
+      "forbiddenActions": ["implementar features de negocio"]
+    }
+  ],
+  "violationTypes": [
+    {
+      "id": "used_prohibited_tools",
+      "name": "Uso de herramientas prohibidas",
+      "description": "El agente usó herramientas que tiene prohibidas según su configuración",
+      "severity": "high"
+    },
+    {
+      "id": "implemented_code",
+      "name": "Router ejecutó herramientas/código",
+      "description": "Un agente tipo router implementó código cuando solo debería coordinar",
+      "severity": "high"
+    },
+    {
+      "id": "no_handoff",
+      "name": "No hizo handoff cuando debía",
+      "description": "El agente debió derivar a otro especialista pero no lo hizo",
+      "severity": "medium"
+    },
+    {
+      "id": "out_of_scope",
+      "name": "Implementación fuera de scope",
+      "description": "El agente implementó funcionalidad fuera de su área de responsabilidad",
+      "severity": "high"
+    },
+    {
+      "id": "started_mcp_server",
+      "name": "Inició MCP server sin ser requerido",
+      "description": "El agente inició un servidor MCP cuando no era necesario",
+      "severity": "medium"
+    },
+    {
+      "id": "ignored_metadata",
+      "name": "Ignoró metadata/meta-instrucciones",
+      "description": "El agente no siguió las meta-instrucciones de su configuración",
+      "severity": "medium"
+    },
+    {
+      "id": "failed_verification",
+      "name": "Falló verificaciones pre/post",
+      "description": "El agente no completó las verificaciones obligatorias",
+      "severity": "low"
+    }
+  ],
+  "qualityThresholds": {
+    "A+": {
+      "minSuccessRate": 100,
+      "maxViolations": 0,
+      "description": "Perfecto - Framework listo para producción",
+      "color": "#22c55e",
+      "badgeColor": "brightgreen"
+    },
+    "A": {
+      "minSuccessRate": 97,
+      "maxViolations": 3,
+      "description": "Ajuste menor - Revisar agentes específicos",
+      "color": "#84cc16",
+      "badgeColor": "green"
+    },
+    "B": {
+      "minSuccessRate": 90,
+      "maxViolations": 10,
+      "description": "Ajuste moderado - Refinamiento de prompts",
+      "color": "#eab308",
+      "badgeColor": "yellow"
+    },
+    "C": {
+      "minSuccessRate": 80,
+      "maxViolations": 20,
+      "description": "Revisión necesaria - Mejorar varios agentes",
+      "color": "#f97316",
+      "badgeColor": "orange"
+    },
+    "D": {
+      "minSuccessRate": 0,
+      "maxViolations": 100,
+      "description": "Revisión profunda - Re-diseño necesario",
+      "color": "#ef4444",
+      "badgeColor": "red"
+    }
+  },
+  "environments": [
+    {
+      "id": "vscode",
+      "name": "VSCode Chat",
+      "description": "GitHub Copilot en VSCode"
+    },
+    {
+      "id": "github",
+      "name": "GitHub Copilot Chat",
+      "description": "GitHub Copilot en github.com"
+    }
+  ],
+  "github": {
+    "owner": "Angel-Baez",
+    "repo": "mern-agents-framework",
+    "auditLabels": ["audit", "quality"],
+    "auditTitlePrefix": "[AUDITORÍA]"
+  },
+  "output": {
+    "reportsDir": "docs/audit-results",
+    "historyFile": "docs/audit-results/audit-history.json",
+    "latestReportFile": "docs/audit-results/latest-report.md",
+    "badgeFile": "docs/audit-results/badges/quality-badge.svg"
+  }
+}
