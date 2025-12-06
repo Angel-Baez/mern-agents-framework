@@ -61,7 +61,7 @@ async function updateEpic() {
           total: agentIssues.length,
           successes: agentSuccesses,
           violations: agentIssues.length - agentSuccesses,
-          rate: ((agentSuccesses / agentIssues.length) * 100).toFixed(0)
+          rate: parseInt(((agentSuccesses / agentIssues.length) * 100).toFixed(0))
         };
       }
     });
