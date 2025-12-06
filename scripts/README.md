@@ -27,11 +27,11 @@ npm install
 El script `audit-analyzer.js` parsea issues de GitHub y extrae métricas de las tablas markdown.
 
 ```bash
-# Analizar la última auditoría (requiere GITHUB_TOKEN)
-GITHUB_TOKEN=your_token node scripts/audit-analyzer.js --latest
+# Analizar la última auditoría (requiere GH_ACCESS_TOKEN)
+GH_ACCESS_TOKEN=your_token node scripts/audit-analyzer.js --latest
 
 # Analizar auditoría específica
-GITHUB_TOKEN=your_token node scripts/audit-analyzer.js --issue 123
+GH_ACCESS_TOKEN=your_token node scripts/audit-analyzer.js --issue 123
 
 # Analizar desde archivo local
 node scripts/audit-analyzer.js --file sample-audit.json
@@ -41,6 +41,7 @@ node scripts/audit-analyzer.js --latest --output results.json
 ```
 
 **Opciones:**
+
 - `--latest`: Analiza el issue de auditoría más reciente
 - `--issue <number>`: Analiza un issue específico por número
 - `--file <path>`: Carga datos de un archivo JSON local
@@ -50,6 +51,7 @@ node scripts/audit-analyzer.js --latest --output results.json
 ### 2. Generación de Reportes
 
 El script `generate-audit-report.js` toma los datos analizados y genera:
+
 - Reporte markdown formateado
 - Badge SVG de calidad
 - Actualización del historial
@@ -66,6 +68,7 @@ node scripts/generate-audit-report.js --output-dir ./reports
 ```
 
 **Archivos generados:**
+
 - `docs/audit-results/latest-report.md` - Reporte markdown
 - `docs/audit-results/badges/quality-badge.svg` - Badge de calidad
 - `docs/audit-results/audit-history.json` - Historial actualizado
@@ -83,6 +86,7 @@ xdg-open scripts/audit-dashboard.html
 ```
 
 **Características:**
+
 - 📊 5 tipos de gráficos (gauge, barras, pie, línea, comparación)
 - 🌙 Dark mode
 - 🔍 Filtros por entorno, umbral y búsqueda
@@ -108,6 +112,7 @@ npm run audit:full
 El archivo `audit-config.json` contiene:
 
 ### Agentes
+
 ```json
 {
   "agents": [
@@ -123,6 +128,7 @@ El archivo `audit-config.json` contiene:
 ```
 
 ### Tipos de Violación
+
 ```json
 {
   "violationTypes": [
@@ -136,6 +142,7 @@ El archivo `audit-config.json` contiene:
 ```
 
 ### Umbrales de Calidad
+
 ```json
 {
   "qualityThresholds": {
@@ -152,14 +159,14 @@ El archivo `audit-config.json` contiene:
 
 El analyzer calcula las siguientes métricas:
 
-| Métrica | Descripción |
-|---------|-------------|
-| Tasa de éxito global | % de usos sin violaciones |
-| Tasa de éxito por agente | % de éxito individual |
-| Comparación de entornos | VSCode vs GitHub |
-| Tipos de violación | Distribución de errores |
-| Ranking de agentes | Top 5 y Bottom 5 |
-| Evolución temporal | Tendencia histórica |
+| Métrica                  | Descripción               |
+| ------------------------ | ------------------------- |
+| Tasa de éxito global     | % de usos sin violaciones |
+| Tasa de éxito por agente | % de éxito individual     |
+| Comparación de entornos  | VSCode vs GitHub          |
+| Tipos de violación       | Distribución de errores   |
+| Ranking de agentes       | Top 5 y Bottom 5          |
+| Evolución temporal       | Tendencia histórica       |
 
 ## 📈 Formato de Salida JSON
 
@@ -198,15 +205,15 @@ El workflow `.github/workflows/audit-report.yml` automatiza el proceso:
 
 ## 🛠️ Variables de Entorno
 
-| Variable | Descripción | Requerido |
-|----------|-------------|-----------|
-| `GITHUB_TOKEN` | Token de acceso a GitHub API | Para análisis remoto |
+| Variable          | Descripción                  | Requerido            |
+| ----------------- | ---------------------------- | -------------------- |
+| `GH_ACCESS_TOKEN` | Token de acceso a GitHub API | Para análisis remoto |
 
 ## 📝 Ejemplo de Flujo Completo
 
 ```bash
 # 1. Configurar token
-export GITHUB_TOKEN=ghp_xxxxxxxxxxxx
+export GH_ACCESS_TOKEN=ghp_xxxxxxxxxxxx
 
 # 2. Analizar última auditoría
 node scripts/audit-analyzer.js --latest
@@ -224,19 +231,22 @@ open scripts/audit-dashboard.html
 
 ## 🐛 Troubleshooting
 
-### Error: "No GITHUB_TOKEN found"
+### Error: "No GH_ACCESS_TOKEN found"
+
 ```bash
 # Solución: Configurar variable de entorno
-export GITHUB_TOKEN=tu_token_aqui
+export GH_ACCESS_TOKEN=tu_token_aqui
 ```
 
 ### Error: "Input file not found"
+
 ```bash
 # Solución: Ejecutar primero el analyzer
 node scripts/audit-analyzer.js --latest
 ```
 
 ### Dashboard no carga datos
+
 1. Hacer clic en "🔄 Cargar Datos"
 2. Pegar el JSON de `docs/audit-results/latest-analysis.json`
 3. O cargar archivo directamente
