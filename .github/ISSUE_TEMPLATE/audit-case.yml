@@ -7,9 +7,9 @@ body:
     attributes:
       value: |
         # 📝 Registro de Caso de Auditoría
-        
-        Este template documenta un caso individual de uso de un agente. 
-        
+
+        Este template documenta un caso individual de uso de un agente.
+
   - type: input
     id: parent-issue
     attributes:
@@ -18,7 +18,7 @@ body:
       placeholder: "#7"
     validations:
       required: true
-      
+
   - type: input
     id: case-number
     attributes:
@@ -27,7 +27,7 @@ body:
       placeholder: "5"
     validations:
       required: true
-      
+
   - type: dropdown
     id: agent
     attributes:
@@ -51,7 +51,7 @@ body:
         - devops-engineer
     validations:
       required: true
-      
+
   - type: dropdown
     id: environment
     attributes:
@@ -62,7 +62,7 @@ body:
         - GitHub Copilot Chat
     validations:
       required: true
-      
+
   - type: dropdown
     id: result
     attributes:
@@ -74,7 +74,7 @@ body:
         - ❌ Violación Mayor (violó scope o límites fundamentales)
     validations:
       required: true
-      
+
   - type: textarea
     id: request
     attributes:
@@ -84,7 +84,7 @@ body:
         "Implementa autenticación JWT con refresh tokens"
     validations:
       required: true
-      
+
   - type: textarea
     id: observation
     attributes:
@@ -97,7 +97,7 @@ body:
         ❌ Modificó archivos de configuración sin handoff a devops
     validations:
       required: true
-      
+
   - type: checkboxes
     id: violations
     attributes:
@@ -111,7 +111,7 @@ body:
         - label: Inició MCP server sin ser requerido
         - label: Ignoró metadata/meta-instrucciones
         - label: Falló verificaciones pre/post
-        
+
   - type: dropdown
     id: severity
     attributes:
@@ -123,7 +123,7 @@ body:
         - Media (violación menor de scope)
         - Alta (violación crítica de scope)
         - Crítica (comportamiento peligroso/destructivo)
-        
+
   - type: textarea
     id: context
     attributes:
@@ -134,11 +134,11 @@ body:
         - src/auth/jwt.service.ts ✅
         - src/auth/auth.controller.ts ✅
         - .env.example ❌ (fuera de scope)
-        
+
         **Stack del proyecto:**
         - Backend: NestJS + TypeScript
         - Auth: Passport + JWT
-        
+
   - type: textarea
     id: corrective-action
     attributes:
@@ -148,7 +148,7 @@ body:
         - Agregar este caso como ejemplo negativo en el documento del agente
         - Reforzar la sección de "archivos prohibidos" con .env*
         - Actualizar verificación pre-ejecución con checklist de config files
-        
+
   - type: textarea
     id: additional-notes
     attributes:
