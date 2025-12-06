@@ -1,0 +1,36 @@
+{
+  "name": "mern-agents-framework",
+  "version": "1.0.0",
+  "description": "Framework de agentes de GitHub Copilot para proyectos MERN Stack + Next.js + TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "audit:analyze": "node scripts/audit-analyzer.js",
+    "audit:report": "node scripts/generate-audit-report.js",
+    "audit:full": "npm run audit:analyze && npm run audit:report"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Angel-Baez/mern-agents-framework.git"
+  },
+  "keywords": [
+    "mern",
+    "agents",
+    "copilot",
+    "github",
+    "typescript",
+    "nextjs"
+  ],
+  "author": "Angel-Baez",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Angel-Baez/mern-agents-framework/issues"
+  },
+  "homepage": "https://github.com/Angel-Baez/mern-agents-framework#readme",
+  "dependencies": {
+    "@octokit/rest": "^20.0.2"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
