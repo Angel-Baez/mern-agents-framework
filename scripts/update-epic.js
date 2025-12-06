@@ -8,7 +8,7 @@ const octokit = new Octokit({
 
 const owner = 'Angel-Baez';
 const repo = 'mern-agents-framework';
-const epicNumber = 7;
+const epicNumber = parseInt(process.env.EPIC_ISSUE_NUMBER || '7', 10);
 
 async function updateEpic() {
   try {
@@ -89,7 +89,7 @@ async function updateEpic() {
       .sort((a, b) => b[1].rate - a[1].rate)
       .forEach(([agent, stats]) => {
         const emoji = stats.rate == 100 ? '🏆' : stats.rate >= 50 ? '⚠️' : '❌';
-        agentTable += `| ${agent} | ${stats.total} | ${stats.successes} | ${stats.violations} | ${stats.rate}% ${emoji} |\\n`;
+        agentTable += `| ${agent} | ${stats.total} | ${stats.successes} | ${stats.violations} | ${stats.rate}% ${emoji} |\n`;
       });
 
     // Agrupar sub-issues por resultado
@@ -106,27 +106,27 @@ async function updateEpic() {
     // Generar listas de sub-issues
     let successList = successIssues.map(i =>
       `- #${i.number} - ${i.title}`
-    ).join('\\n');
+    ).join('\n');
 
     let majorList = majorIssues.map(i =>
       `- #${i.number} - ${i.title}`
-    ).join('\\n');
+    ).join('\n');
 
     let minorList = minorIssues.map(i =>
       `- #${i.number} - ${i.title}`
-    ).join('\\n');
+    ).join('\n');
 
     // Generar clasificación
     let classification = '';
     const totalViolations = majorViolations + minorViolations;
     if (totalViolations === 0) {
-      classification = '- [x] 0 fallos – A+ Perfecto\\n- [ ] 1-3 fallos – Ajuste menor\\n- [ ] 4-10 fallos – Ajuste moderado\\n- [ ] 11+ fallos – Revisión profunda';
+      classification = '- [x] 0 fallos – A+ Perfecto\n- [ ] 1-3 fallos – Ajuste menor\n- [ ] 4-10 fallos – Ajuste moderado\n- [ ] 11+ fallos – Revisión profunda';
     } else if (totalViolations <= 3) {
-      classification = '- [ ] 0 fallos – A+ Perfecto\\n- [x] 1-3 fallos – Ajuste menor (estamos aquí)\\n- [ ] 4-10 fallos – Ajuste moderado\\n- [ ] 11+ fallos – Revisión profunda';
+      classification = '- [ ] 0 fallos – A+ Perfecto\n- [x] 1-3 fallos – Ajuste menor (estamos aquí)\n- [ ] 4-10 fallos – Ajuste moderado\n- [ ] 11+ fallos – Revisión profunda';
     } else if (totalViolations <= 10) {
-      classification = '- [ ] 0 fallos – A+ Perfecto\\n- [ ] 1-3 fallos – Ajuste menor\\n- [x] 4-10 fallos – Ajuste moderado (estamos aquí)\\n- [ ] 11+ fallos – Revisión profunda';
+      classification = '- [ ] 0 fallos – A+ Perfecto\n- [ ] 1-3 fallos – Ajuste menor\n- [x] 4-10 fallos – Ajuste moderado (estamos aquí)\n- [ ] 11+ fallos – Revisión profunda';
     } else {
-      classification = '- [ ] 0 fallos – A+ Perfecto\\n- [ ] 1-3 fallos – Ajuste menor\\n- [ ] 4-10 fallos – Ajuste moderado\\n- [x] 11+ fallos – Revisión profunda (estamos aquí)';
+      classification = '- [ ] 0 fallos – A+ Perfecto\n- [ ] 1-3 fallos – Ajuste menor\n- [ ] 4-10 fallos – Ajuste moderado\n- [x] 11+ fallos – Revisión profunda (estamos aquí)';
     }
 
     // Calcular porcentajes y tasas
