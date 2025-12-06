@@ -18,12 +18,16 @@ create_label() {
     local name=$1
     local color=$2
     local description=$3
-    
-    gh label create "$name" \
+
+    if gh label create "$name" \
         --color "$color" \
         --description "$description" \
         --repo "$OWNER/$REPO" \
-        --force 2>/dev/null
+        --force 2>&1; then
+        echo "✓ Created/updated label: $name"
+    else
+        echo "✗ Failed to create label: $name" >&2
+    fi
 }
 
 # Labels de resultado

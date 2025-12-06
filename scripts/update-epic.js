@@ -12,8 +12,8 @@ const epicNumber = parseInt(process.env.EPIC_ISSUE_NUMBER || '7', 10);
 
 async function updateEpic() {
   try {
-    // Obtener todos los sub-issues de auditoría
-    const { data: allIssues } = await octokit.rest.issues.listForRepo({
+    // Obtener todos los sub-issues de auditoría con paginación
+    const allIssues = await octokit.paginate(octokit.rest.issues.listForRepo, {
       owner,
       repo,
       labels: 'audit',
@@ -88,7 +88,7 @@ async function updateEpic() {
     Object.entries(agentStats)
       .sort((a, b) => b[1].rate - a[1].rate)
       .forEach(([agent, stats]) => {
-        const emoji = stats.rate == 100 ? '🏆' : stats.rate >= 50 ? '⚠️' : '❌';
+        const emoji = stats.rate === 100 ? '🏆' : stats.rate >= 50 ? '⚠️' : '❌';
         agentTable += `| ${agent} | ${stats.total} | ${stats.successes} | ${stats.violations} | ${stats.rate}% ${emoji} |\n`;
       });
 
