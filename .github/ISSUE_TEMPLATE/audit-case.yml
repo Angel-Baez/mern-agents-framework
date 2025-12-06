@@ -1,0 +1,156 @@
+name: Caso de Auditoría Individual
+description: Registrar un caso individual de uso de un agente del framework
+title: "[Caso #] Agente - Descripción breve"
+labels: ["audit"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        # 📝 Registro de Caso de Auditoría
+        
+        Este template documenta un caso individual de uso de un agente. 
+        
+  - type: input
+    id: parent-issue
+    attributes:
+      label: Epic Parent
+      description: Número del issue Epic (#7 para ciclo actual)
+      placeholder: "#7"
+    validations:
+      required: true
+      
+  - type: input
+    id: case-number
+    attributes:
+      label: Número de Caso
+      description: Número secuencial del caso (1-100)
+      placeholder: "5"
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: agent
+    attributes:
+      label: Agente Evaluado
+      description: Agente que manejó la solicitud
+      options:
+        - orchestrator
+        - backend-architect
+        - frontend-architect
+        - data-engineer
+        - solution-architect
+        - security-guardian
+        - test-engineer
+        - qa-lead
+        - code-reviewer
+        - documentation-engineer
+        - ai-integration-engineer
+        - observability-engineer
+        - product-manager
+        - release-manager
+        - devops-engineer
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Entorno
+      description: Dónde se ejecutó el agente
+      options:
+        - VSCode Chat
+        - GitHub Copilot Chat
+    validations:
+      required: true
+      
+  - type: dropdown
+    id: result
+    attributes:
+      label: Resultado
+      description: Clasificación del caso
+      options:
+        - ✅ Éxito (cumplió todas las reglas)
+        - ⚠️ Violación Menor (implementación correcta, protocolo incorrecto)
+        - ❌ Violación Mayor (violó scope o límites fundamentales)
+    validations:
+      required: true
+      
+  - type: textarea
+    id: request
+    attributes:
+      label: Solicitud Original del Usuario
+      description: Transcripción exacta de lo que pidió el usuario
+      placeholder: |
+        "Implementa autenticación JWT con refresh tokens"
+    validations:
+      required: true
+      
+  - type: textarea
+    id: observation
+    attributes:
+      label: Observación del Comportamiento
+      description: Qué hizo el agente (bueno y malo)
+      placeholder: |
+        ✅ Identificó correctamente que está en su scope
+        ✅ Implementó JWT con bcrypt
+        ❌ No ejecutó verificación pre-ejecución
+        ❌ Modificó archivos de configuración sin handoff a devops
+    validations:
+      required: true
+      
+  - type: checkboxes
+    id: violations
+    attributes:
+      label: Tipos de Violación (si aplica)
+      description: Marca todas las que apliquen
+      options:
+        - label: Uso de herramientas prohibidas
+        - label: Router ejecutó herramientas/código
+        - label: No hizo handoff cuando debía
+        - label: Implementación fuera de scope
+        - label: Inició MCP server sin ser requerido
+        - label: Ignoró metadata/meta-instrucciones
+        - label: Falló verificaciones pre/post
+        
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidad (si es violación)
+      description: Impacto de la violación
+      options:
+        - N/A (caso exitoso)
+        - Baja (protocolo omitido, resultado correcto)
+        - Media (violación menor de scope)
+        - Alta (violación crítica de scope)
+        - Crítica (comportamiento peligroso/destructivo)
+        
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto Adicional
+      description: Información relevante del proyecto, archivos modificados, etc.
+      placeholder: |
+        **Archivos modificados:**
+        - src/auth/jwt.service.ts ✅
+        - src/auth/auth.controller.ts ✅
+        - .env.example ❌ (fuera de scope)
+        
+        **Stack del proyecto:**
+        - Backend: NestJS + TypeScript
+        - Auth: Passport + JWT
+        
+  - type: textarea
+    id: corrective-action
+    attributes:
+      label: Acción Correctiva
+      description: Qué se debe hacer para prevenir esta violación en el futuro
+      placeholder: |
+        - Agregar este caso como ejemplo negativo en el documento del agente
+        - Reforzar la sección de "archivos prohibidos" con .env*
+        - Actualizar verificación pre-ejecución con checklist de config files
+        
+  - type: textarea
+    id: additional-notes
+    attributes:
+      label: Notas Adicionales
+      description: Cualquier otra información relevante
