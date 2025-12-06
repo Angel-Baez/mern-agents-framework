@@ -83,7 +83,7 @@ async function updateEpic() {
 
     // Generar tabla de agentes
     let agentTable = '| Agente | Casos | Éxitos | Violaciones | % Éxito |\n';
-    agentTable += '|--------|-------|--------|-------------|---------|\\n';
+    agentTable += '|--------|-------|--------|-------------|---------|\n';
 
     Object.entries(agentStats)
       .sort((a, b) => b[1].rate - a[1].rate)
