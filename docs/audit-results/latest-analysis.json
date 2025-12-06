@@ -5,13 +5,13 @@
     "date": "2025-12-06",
     "closedAt": null,
     "environment": "github",
-    "totalUses": 15,
+    "totalUses": 10,
     "totalViolations": 2,
-    "generatedAt": "2025-12-06T01:41:14.713Z"
+    "generatedAt": "2025-12-06T01:46:37.262Z"
   },
   "globalMetrics": {
-    "successRate": 86.67,
-    "violationRate": 13.33,
+    "successRate": 80,
+    "violationRate": 20,
     "grade": "C",
     "gradeDescription": "Revisión necesaria - Mejorar varios agentes",
     "gradeColor": "#f97316",
@@ -80,9 +80,9 @@
   "environmentComparison": {
     "github": {
       "name": "GitHub Copilot Chat",
-      "uses": 15,
+      "uses": 10,
       "violations": 2,
-      "successRate": 86.67
+      "successRate": 80
     }
   },
   "violationBreakdown": {
@@ -91,7 +91,7 @@
     "no_handoff": 0,
     "out_of_scope": 0,
     "started_mcp_server": 0,
-    "ignored_metadata": 5,
+    "ignored_metadata": 0,
     "failed_verification": 0
   },
   "topAgents": [
@@ -165,8 +165,8 @@
   ],
   "timeline": [
     {
-      "date": "2025-12-06T01:41:14.712Z",
-      "successRate": 86.67,
+      "date": "2025-12-06T01:46:37.260Z",
+      "successRate": 80,
       "violations": 2,
       "environment": "github"
     }
@@ -231,36 +231,6 @@
       "agent": "frontend-architect",
       "success": false,
       "observation": "Implementó lógica de backend"
-    },
-    {
-      "use": 3,
-      "agent": "1",
-      "success": false,
-      "observation": ""
-    },
-    {
-      "use": 2,
-      "agent": "0",
-      "success": false,
-      "observation": ""
-    },
-    {
-      "use": 2,
-      "agent": "1",
-      "success": false,
-      "observation": ""
-    },
-    {
-      "use": 1,
-      "agent": "0",
-      "success": false,
-      "observation": ""
-    },
-    {
-      "use": 1,
-      "agent": "0",
-      "success": false,
-      "observation": ""
     }
   ]
 }

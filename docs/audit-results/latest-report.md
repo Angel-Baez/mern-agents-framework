@@ -2,26 +2,26 @@
 
 **Fecha:** 2025-12-06  
 **Entorno:** GitHub Copilot Chat  
-**Total de usos:** 15  
+**Total de usos:** 10  
 **Violaciones:** 2  
-**Generado:** 6/12/2025, 1:41:14
+**Generado:** 6/12/2025, 1:46:37
 
 ---
 
-## 🥉 Calificación Global: C (86.67% éxito)
+## 🥉 Calificación Global: C (80% éxito)
 
 Revisión necesaria - Mejorar varios agentes
 
 ### Métricas Principales
 
 ```
-Tasa de Éxito: [█████████████████░░░] 86.7%
-Violaciones:   2/15 (13.33%)
+Tasa de Éxito: [████████████████░░░░] 80.0%
+Violaciones:   2/10 (20%)
 Objetivo:      0 violaciones
 ```
 
-- ✅ **Tasa de éxito:** 86.67%
-- ❌ **Violaciones:** 2/15 (13.33%)
+- ✅ **Tasa de éxito:** 80%
+- ❌ **Violaciones:** 2/10 (20%)
 - 🎯 **Objetivo:** 0 violaciones
 
 ---
@@ -75,18 +75,15 @@ Frontend Architect │ ███████████████            
 ## 🖥️ Comparación por Entorno
 
 ### GitHub Copilot Chat
-- **Usos:** 15
+- **Usos:** 10
 - **Violaciones:** 2
-- **Tasa de éxito:** 86.67%
+- **Tasa de éxito:** 80%
 
 ---
 
 ## ❌ Tipos de Violación
 
-1. **Ignoró metadata/meta-instrucciones** (5 casos)
-   _El agente no siguió las meta-instrucciones de su configuración_
-
-2. **Router ejecutó herramientas/código** (2 casos)
+1. **Router ejecutó herramientas/código** (2 casos)
    _Un agente tipo router implementó código cuando solo debería coordinar_
 
 ---
@@ -111,12 +108,12 @@ Frontend Architect │ ███████████████            
 
 ## 🏷️ Badge de Calidad
 
-![Quality Badge](https://img.shields.io/badge/Quality-C%20(86.67%25)-orange)
+![Quality Badge](https://img.shields.io/badge/Quality-C%20(80%25)-orange)
 
 ### Badge Local
 
 ```html
-<img src="badges/quality-badge.svg" alt="Quality: C (86.67%)">
+<img src="badges/quality-badge.svg" alt="Quality: C (80%)">
 ```
 
 ---

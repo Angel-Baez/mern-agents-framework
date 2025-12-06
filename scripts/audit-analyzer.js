@@ -15,6 +15,15 @@
 const fs = require('fs');
 const path = require('path');
 
+// Lazy load Octokit to avoid requiring it when not needed
+let Octokit = null;
+function getOctokit(token) {
+  if (!Octokit) {
+    Octokit = require('@octokit/rest').Octokit;
+  }
+  return new Octokit({ auth: token });
+}
+
 // Configuration
 const CONFIG_PATH = path.join(__dirname, 'audit-config.json');
 const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8'));
@@ -138,6 +147,7 @@ function parseMarkdownTable(text, tableName) {
  */
 function parseAuditTable(text) {
   const uses = [];
+  const validAgentIds = config.agents.map(a => a.id);
   
   // Pattern: | Uso | Agente | Resultado | Observación |
   const rowPattern = /\|\s*(\d+)\s*\|\s*([^|]*)\s*\|\s*([✓✗×✔]|[^|]*)\s*\|\s*([^|]*)\s*\|/g;
@@ -148,7 +158,8 @@ function parseAuditTable(text) {
     const agentName = agent.trim().toLowerCase().replace(/\s+/g, '-');
     const isSuccess = result.includes('✓') || result.includes('✔') || result.toLowerCase().includes('ok');
     
-    if (agentName && agentName !== '' && agentName !== '...') {
+    // Validate agent name against configured agents
+    if (agentName && agentName !== '' && agentName !== '...' && validAgentIds.includes(agentName)) {
       uses.push({
         use: parseInt(useNum, 10),
         agent: agentName,
@@ -526,8 +537,7 @@ async function main() {
   // Fetch from GitHub API
   else if (process.env.GITHUB_TOKEN) {
     try {
-      const { Octokit } = require('@octokit/rest');
-      const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+      const octokit = getOctokit(process.env.GITHUB_TOKEN);
       
       const issues = await fetchAuditIssues(octokit);
       

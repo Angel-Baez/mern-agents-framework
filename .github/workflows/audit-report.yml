@@ -81,8 +81,7 @@ jobs:
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add docs/audit-results/
-          git commit -m "📊 Update audit report for issue #${{ steps.issue.outputs.number }}" || echo "No changes to commit"
-          git push
+          git diff --staged --quiet || (git commit -m "📊 Update audit report for issue #${{ steps.issue.outputs.number }}" && git push)
 
       - name: Comment on issue
         if: github.event_name == 'issues'

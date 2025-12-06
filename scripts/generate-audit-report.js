@@ -105,6 +105,16 @@ function generateQualityBadge(grade, successRate, badgeColor) {
   const labelWidth = 50;
   const totalWidth = labelWidth + textWidth + 20;
   
+  // Color mapping for badge colors
+  const colorMap = {
+    brightgreen: '#4c1',
+    green: '#97CA00',
+    yellow: '#dfb317',
+    orange: '#fe7d37',
+    red: '#e05d44'
+  };
+  const fillColor = colorMap[badgeColor] || '#e05d44';
+  
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${totalWidth}" height="20">
   <linearGradient id="smooth" x2="0" y2="100%">
     <stop offset="0" stop-color="#bbb" stop-opacity=".1"/>
@@ -115,7 +125,7 @@ function generateQualityBadge(grade, successRate, badgeColor) {
   </clipPath>
   <g clip-path="url(#round)">
     <rect width="${labelWidth}" height="20" fill="#555"/>
-    <rect x="${labelWidth}" width="${textWidth + 20}" height="20" fill="${badgeColor === 'brightgreen' ? '#4c1' : badgeColor === 'green' ? '#97CA00' : badgeColor === 'yellow' ? '#dfb317' : badgeColor === 'orange' ? '#fe7d37' : '#e05d44'}"/>
+    <rect x="${labelWidth}" width="${textWidth + 20}" height="20" fill="${fillColor}"/>
     <rect width="${totalWidth}" height="20" fill="url(#smooth)"/>
   </g>
   <g fill="#fff" text-anchor="middle" font-family="DejaVu Sans,Verdana,Geneva,sans-serif" font-size="11">

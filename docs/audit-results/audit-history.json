@@ -5,15 +5,15 @@
       "issueNumber": 1,
       "date": "2025-12-06",
       "environment": "github",
-      "successRate": 86.67,
+      "successRate": 80,
       "violations": 2,
       "grade": "C",
-      "totalUses": 15
+      "totalUses": 10
     }
   ],
   "summary": {
     "totalAudits": 1,
-    "averageSuccessRate": 86.67,
-    "lastUpdated": "2025-12-06T01:41:22.451Z"
+    "averageSuccessRate": 80,
+    "lastUpdated": "2025-12-06T01:46:37.323Z"
   }
 }
