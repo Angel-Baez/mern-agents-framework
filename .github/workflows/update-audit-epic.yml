@@ -1,0 +1,38 @@
+name: Update Audit Epic Metrics
+
+on:
+  issues:
+    types: [opened, closed, labeled, unlabeled, edited]
+  workflow_dispatch:
+
+jobs:
+  update-epic:
+    if: |
+      contains(github.event.issue.labels.*.name, 'audit') &&
+      github.event.issue.number != 7
+
+    runs-on: ubuntu-latest
+
+    env:
+      EPIC_ISSUE_NUMBER: 7
+
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install @octokit/rest
+
+      - name: Update Epic Issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/update-epic.js
