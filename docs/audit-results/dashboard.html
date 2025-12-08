@@ -1,126 +1,143 @@
 <!DOCTYPE html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard de Auditoría - Framework de 15 Agentes</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" integrity="sha384-CwAFSZ9gRUeBabocLLTPHTiL7SvHlD0HfZJ5Kk8R38PapOZ3uo4dYaJLCH6n6l4L" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-</head>
-<body>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📊</text></svg>"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  </head>
+  <body>
     <div id="loading" class="loading-overlay">
-        <div class="loader"></div>
-        <p>Cargando datos de auditoría...</p>
+      <div class="loader"></div>
+      <p>Cargando datos de auditoría...</p>
     </div>
 
     <header>
-        <div class="header-content">
-            <div>
-                <h1>📊 Dashboard de Auditoría</h1>
-                <p>Framework de 15 Agentes - Ciclo 2025-12-06</p>
-            </div>
-            <div class="header-actions">
-                <button id="refreshBtn" class="btn btn-primary">🔄 Actualizar</button>
-                <button id="exportBtn" class="btn btn-secondary">📥 Exportar PDF</button>
-            </div>
+      <div class="header-content">
+        <div>
+          <h1>📊 Dashboard de Auditoría</h1>
+          <p>Framework de 15 Agentes - Ciclo 2025-12-06</p>
         </div>
+        <div class="header-actions">
+          <button id="refreshBtn" class="btn btn-primary">🔄 Actualizar</button>
+          <button id="exportBtn" class="btn btn-secondary">
+            📥 Exportar PDF
+          </button>
+        </div>
+      </div>
     </header>
 
     <main id="mainContent">
-        <!-- Métricas globales -->
-        <section id="metrics" class="metrics-section">
-            <div class="card metric-card">
-                <h3>Total Casos</h3>
-                <p class="metric" id="totalCases">-</p>
-                <span class="submetric" id="totalProgress">0/100</span>
-            </div>
-            <div class="card metric-card success">
-                <h3>Éxitos</h3>
-                <p class="metric" id="successCases">-</p>
-                <span class="submetric" id="successRate">0%</span>
-            </div>
-            <div class="card metric-card warning">
-                <h3>Violaciones</h3>
-                <p class="metric" id="violationCases">-</p>
-                <span class="submetric" id="violationRate">0%</span>
-            </div>
-            <div class="card metric-card info">
-                <h3>Tasa de Éxito</h3>
-                <p class="metric" id="overallRate">-</p>
-                <span class="submetric" id="classification">-</span>
-            </div>
-        </section>
+      <!-- Métricas globales -->
+      <section id="metrics" class="metrics-section">
+        <div class="card metric-card">
+          <h3>Total Casos</h3>
+          <p class="metric" id="totalCases">-</p>
+          <span class="submetric" id="totalProgress">0/100</span>
+        </div>
+        <div class="card metric-card success">
+          <h3>Éxitos</h3>
+          <p class="metric" id="successCases">-</p>
+          <span class="submetric" id="successRate">0%</span>
+        </div>
+        <div class="card metric-card warning">
+          <h3>Violaciones</h3>
+          <p class="metric" id="violationCases">-</p>
+          <span class="submetric" id="violationRate">0%</span>
+        </div>
+        <div class="card metric-card info">
+          <h3>Tasa de Éxito</h3>
+          <p class="metric" id="overallRate">-</p>
+          <span class="submetric" id="classification">-</span>
+        </div>
+      </section>
 
-        <!-- Gráficos -->
-        <section id="charts" class="charts-section">
-            <div class="chart-container">
-                <h2>Distribución de Resultados</h2>
-                <canvas id="pieChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <h2>Rendimiento por Agente</h2>
-                <canvas id="agentChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <h2>Rendimiento por Entorno</h2>
-                <canvas id="envChart"></canvas>
-            </div>
-            <div class="chart-container">
-                <h2>Tendencia de Éxito</h2>
-                <canvas id="trendChart"></canvas>
-            </div>
-        </section>
+      <!-- Gráficos -->
+      <section id="charts" class="charts-section">
+        <div class="chart-container">
+          <h2>Distribución de Resultados</h2>
+          <canvas id="pieChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h2>Rendimiento por Agente</h2>
+          <canvas id="agentChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h2>Rendimiento por Entorno</h2>
+          <canvas id="envChart"></canvas>
+        </div>
+        <div class="chart-container">
+          <h2>Tendencia de Éxito</h2>
+          <canvas id="trendChart"></canvas>
+        </div>
+      </section>
 
-        <!-- Tabla de casos -->
-        <section id="casesTable" class="table-section">
-            <h2>Casos Individuales</h2>
-            <div class="filters">
-                <input type="text" id="searchInput" placeholder="🔍 Buscar..." class="filter-input">
-                <select id="agentFilter" class="filter-select">
-                    <option value="">Todos los agentes</option>
-                </select>
-                <select id="envFilter" class="filter-select">
-                    <option value="">Todos los entornos</option>
-                </select>
-                <select id="resultFilter" class="filter-select">
-                    <option value="">Todos los resultados</option>
-                    <option value="success">✅ Éxitos</option>
-                    <option value="major">❌ Violaciones Mayores</option>
-                    <option value="minor">⚠️ Violaciones Menores</option>
-                </select>
-            </div>
-            <div class="table-wrapper">
-                <table id="casesTableData">
-                    <thead>
-                        <tr>
-                            <th data-sort="number">#</th>
-                            <th data-sort="title">Título</th>
-                            <th data-sort="agent">Agente</th>
-                            <th data-sort="env">Entorno</th>
-                            <th data-sort="result">Resultado</th>
-                            <th data-sort="date">Fecha</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tableBody">
-                        <!-- Generado dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-            <div id="pagination" class="pagination"></div>
-        </section>
+      <!-- Tabla de casos -->
+      <section id="casesTable" class="table-section">
+        <h2>Casos Individuales</h2>
+        <div class="filters">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="🔍 Buscar..."
+            class="filter-input"
+          />
+          <select id="agentFilter" class="filter-select">
+            <option value="">Todos los agentes</option>
+          </select>
+          <select id="envFilter" class="filter-select">
+            <option value="">Todos los entornos</option>
+          </select>
+          <select id="resultFilter" class="filter-select">
+            <option value="">Todos los resultados</option>
+            <option value="success">✅ Éxitos</option>
+            <option value="major">❌ Violaciones Mayores</option>
+            <option value="minor">⚠️ Violaciones Menores</option>
+          </select>
+        </div>
+        <div class="table-wrapper">
+          <table id="casesTableData">
+            <thead>
+              <tr>
+                <th data-sort="number">#</th>
+                <th data-sort="title">Título</th>
+                <th data-sort="agent">Agente</th>
+                <th data-sort="env">Entorno</th>
+                <th data-sort="result">Resultado</th>
+                <th data-sort="date">Fecha</th>
+              </tr>
+            </thead>
+            <tbody id="tableBody">
+              <!-- Generado dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+        <div id="pagination" class="pagination"></div>
+      </section>
     </main>
 
     <footer>
-        <p>Última actualización: <span id="lastUpdate">-</span></p>
-        <p><a href="https://github.com/Angel-Baez/mern-agents-framework/issues/7" target="_blank">Ver Epic #7</a></p>
+      <p>Última actualización: <span id="lastUpdate">-</span></p>
+      <p>
+        <a
+          href="https://github.com/Angel-Baez/mern-agents-framework/issues/7"
+          target="_blank"
+          >Ver Epic #7</a
+        >
+      </p>
     </footer>
 
     <div id="errorMessage" class="error-message hidden">
-        <p id="errorText"></p>
-        <button id="closeError" class="btn btn-small">Cerrar</button>
+      <p id="errorText"></p>
+      <button id="closeError" class="btn btn-small">Cerrar</button>
     </div>
 
     <script src="app.js"></script>
-</body>
+  </body>
 </html>
