@@ -2,7 +2,7 @@
 
 const { Octokit } = require('@octokit/rest');
 
-// Validar variables de entorno requeridas
+// Validate required environment variables
 if (!process.env.GITHUB_TOKEN) {
   console.error('❌ Error: GITHUB_TOKEN environment variable is required');
   process.exit(1);
@@ -17,7 +17,12 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN
 });
 
-const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+const parts = process.env.GITHUB_REPOSITORY.split('/');
+if (parts.length !== 2) {
+  console.error('❌ Error: GITHUB_REPOSITORY must be in format "owner/repo"');
+  process.exit(1);
+}
+const [owner, repo] = parts;
 const epicNumber = parseInt(process.env.EPIC_ISSUE_NUMBER || '7', 10);
 
 async function updateEpic() {
