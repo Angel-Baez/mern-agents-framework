@@ -2,16 +2,28 @@
 
 const { Octokit } = require('@octokit/rest');
 
+// Validar variables de entorno requeridas
+if (!process.env.GITHUB_TOKEN) {
+  console.error('❌ Error: GITHUB_TOKEN environment variable is required');
+  process.exit(1);
+}
+
+if (!process.env.GITHUB_REPOSITORY) {
+  console.error('❌ Error: GITHUB_REPOSITORY environment variable is required');
+  process.exit(1);
+}
+
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN
 });
 
-const owner = 'Angel-Baez';
-const repo = 'mern-agents-framework';
+const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
 const epicNumber = parseInt(process.env.EPIC_ISSUE_NUMBER || '7', 10);
 
 async function updateEpic() {
   try {
+    console.log('🔍 Fetching audit issues...');
+    
     // Obtener todos los sub-issues de auditoría con paginación
     const allIssues = await octokit.paginate(octokit.rest.issues.listForRepo, {
       owner,
@@ -23,6 +35,8 @@ async function updateEpic() {
 
     // Filtrar sub-issues (excluir el epic)
     const subIssues = allIssues.filter(issue => issue.number !== epicNumber);
+    
+    console.log(`📊 Found ${subIssues.length} audit cases`);
 
     // Calcular métricas
     const total = subIssues.length;
