@@ -218,18 +218,16 @@ function renderAgentChart() {
     else if (result === 'minor') agentData[agent].minor++;
   });
   
-  // Filtrar agentes con al menos 1 caso
+  // Calcular totales y filtrar agentes con al menos 1 caso
+  const agentTotals = {};
   const agentsWithCases = Object.keys(agentData).filter(agent => {
     const total = agentData[agent].success + agentData[agent].major + agentData[agent].minor;
+    agentTotals[agent] = total;
     return total > 0;
   });
   
-  // Ordenar por total de casos
-  agentsWithCases.sort((a, b) => {
-    const totalA = agentData[a].success + agentData[a].major + agentData[a].minor;
-    const totalB = agentData[b].success + agentData[b].major + agentData[b].minor;
-    return totalB - totalA;
-  });
+  // Ordenar por total de casos usando totales pre-calculados
+  agentsWithCases.sort((a, b) => agentTotals[b] - agentTotals[a]);
   
   const labels = agentsWithCases;
   const successData = labels.map(agent => agentData[agent].success);
