@@ -1,220 +1,231 @@
-# Hybrid Audit System - User Guide
+# Sistema Híbrido de Auditoría - Guía de Usuario
 
-This document explains how to use the new hybrid audit system for tracking agent behavior across 100 use cases.
+Este documento explica cómo usar el nuevo sistema híbrido de auditoría para el seguimiento del comportamiento de agentes a través de 100 casos de uso.
 
-## Overview
+## Descripción General
 
-The hybrid audit system consists of:
-- **Epic #7**: Executive dashboard with aggregated metrics
-- **Individual sub-issues**: One issue per audit case
-- **Automated labels**: For filtering and categorization
-- **Auto-update workflow**: GitHub Action that updates Epic #7 automatically
+El sistema híbrido de auditoría consiste en:
 
-## Getting Started
+- **Epic #7**: Dashboard ejecutivo con métricas agregadas
+- **Sub-issues individuales**: Un issue por caso de auditoría
+- **Etiquetas automatizadas**: Para filtrado y categorización
+- **Workflow de auto-actualización**: GitHub Action que actualiza el Epic #7 automáticamente
 
-### 1. Set Up Labels (One-time Setup)
+## Primeros Pasos
 
-Run the label creation script to set up all required labels:
+### 1. Configurar Etiquetas (Configuración Única)
+
+Ejecuta el script de creación de etiquetas para configurar todas las etiquetas requeridas:
 
 ```bash
 ./scripts/create-audit-labels.sh Angel-Baez mern-agents-framework
 ```
 
-This creates labels for:
-- **Results**: `case-success`, `case-violation-major`, `case-violation-minor`
-- **Agents**: `agent:orchestrator`, `agent:backend-architect`, etc.
-- **Environments**: `env:vscode`, `env:github-copilot`
-- **Violation types**: `violation:scope`, `violation:protocol`, `violation:tools`, `violation:handoff`
-- **Status**: `needs-review`, `validated`, `disputed`
+Esto crea etiquetas para:
 
-### 2. Create Audit Cases
+- **Resultados**: `case-success`, `case-violation-major`, `case-violation-minor`
+- **Agentes**: `agent:orchestrator`, `agent:backend-architect`, etc.
+- **Entornos**: `env:vscode`, `env:github-copilot`
+- **Tipos de violación**: `violation:scope`, `violation:protocol`, `violation:tools`, `violation:handoff`
+- **Estado**: `needs-review`, `validated`, `disputed`
 
-To document a new audit case:
+### 2. Crear Casos de Auditoría
 
-1. Go to: https://github.com/Angel-Baez/mern-agents-framework/issues/new/choose
-2. Select "Caso de Auditoría Individual"
-3. Fill in the form:
-   - **Epic Parent**: `#7`
-   - **Case Number**: Sequential number (1-100)
-   - **Agent**: Which agent was tested
-   - **Environment**: VSCode Chat or GitHub Copilot Chat
-   - **Result**: Success, Minor Violation, or Major Violation
-   - **Request**: What the user asked for
-   - **Observation**: What happened
-   - **Violations**: Check applicable violations
-   - **Severity**: Impact level
-   - **Context**: Additional details
-   - **Corrective Action**: How to prevent this issue
-4. Add appropriate labels:
-   - `audit` (required)
-   - `case-success`, `case-violation-major`, or `case-violation-minor`
-   - `agent:*` for the tested agent
-   - `env:*` for the environment
-   - Any relevant `violation:*` labels
+Para documentar un nuevo caso de auditoría:
 
-### 3. View Epic Dashboard
+1. Ve a: https://github.com/Angel-Baez/mern-agents-framework/issues/new/choose
+2. Selecciona "Caso de Auditoría Individual"
+3. Completa el formulario:
+   - **Epic Padre**: `#7`
+   - **Número de Caso**: Número secuencial (1-100)
+   - **Agente**: Qué agente fue probado
+   - **Entorno**: VSCode Chat o GitHub Copilot Chat
+   - **Resultado**: Éxito, Violación Menor o Violación Mayor
+   - **Solicitud**: Qué pidió el usuario
+   - **Observación**: Qué sucedió
+   - **Violaciones**: Marca las violaciones aplicables
+   - **Severidad**: Nivel de impacto
+   - **Contexto**: Detalles adicionales
+   - **Acción Correctiva**: Cómo prevenir este problema
+4. Agrega las etiquetas apropiadas:
+   - `audit` (requerida)
+   - `case-success`, `case-violation-major`, o `case-violation-minor`
+   - `agent:*` para el agente probado
+   - `env:*` para el entorno
+   - Cualquier etiqueta relevante `violation:*`
 
-The Epic #7 automatically aggregates all sub-issues and shows:
-- Global metrics (success rate, violations count)
-- Performance by agent
-- Performance by environment
-- List of all sub-issues categorized by result
+### 3. Ver el Dashboard del Epic
 
-View it at: https://github.com/Angel-Baez/mern-agents-framework/issues/7
+El Epic #7 agrega automáticamente todos los sub-issues y muestra:
 
-### 4. Filter and Search
+- Métricas globales (tasa de éxito, conteo de violaciones)
+- Rendimiento por agente
+- Rendimiento por entorno
+- Lista de todos los sub-issues categorizados por resultado
 
-Use GitHub's issue search with labels:
+Ver en: https://github.com/Angel-Baez/mern-agents-framework/issues/7
+
+### 4. Filtrar y Buscar
+
+Usa la búsqueda de issues de GitHub con etiquetas:
 
 ```bash
-# View all successful cases
+# Ver todos los casos exitosos
 gh issue list --label case-success
 
-# View orchestrator's performance
+# Ver el rendimiento del orchestrator
 gh issue list --label agent:orchestrator
 
-# View violations in VSCode
+# Ver violaciones en VSCode
 gh issue list --label env:vscode,case-violation-major
 
-# View scope violations
+# Ver violaciones de scope
 gh issue list --label violation:scope
 ```
 
-## Automatic Updates
+## Actualizaciones Automáticas
 
-The Epic #7 updates automatically via GitHub Actions when:
-- A new audit case issue is opened
-- An issue is closed
-- Labels are added or removed
-- An issue is edited
+El Epic #7 se actualiza automáticamente mediante GitHub Actions cuando:
 
-The workflow runs `scripts/update-epic.js` which:
-1. Fetches all issues with the `audit` label
-2. Calculates metrics (success rate, violations, etc.)
-3. Groups issues by agent and environment
-4. Updates Epic #7 with the new metrics
+- Se abre un nuevo issue de caso de auditoría
+- Se cierra un issue
+- Se agregan o eliminan etiquetas
+- Se edita un issue
 
-## Classification System
+El workflow ejecuta `scripts/update-epic.js` que:
 
-Based on total violations:
-- **0 violations**: A+ Perfecto (Production ready)
-- **1-3 violations**: Ajuste menor (Minor adjustments)
-- **4-10 violations**: Ajuste moderado (Moderate refinement)
-- **11+ violations**: Revisión profunda (Deep review needed)
+1. Obtiene todos los issues con la etiqueta `audit`
+2. Calcula métricas (tasa de éxito, violaciones, etc.)
+3. Agrupa issues por agente y entorno
+4. Actualiza el Epic #7 con las nuevas métricas
 
-## Files Structure
+## Sistema de Clasificación
+
+Basado en el total de violaciones:
+
+- **0 violaciones**: A+ Perfecto (Listo para producción)
+- **1-3 violaciones**: Ajuste menor (Ajustes menores)
+- **4-10 violaciones**: Ajuste moderado (Refinamiento moderado)
+- **11+ violaciones**: Revisión profunda (Revisión profunda necesaria)
+
+## Estructura de Archivos
 
 ```
 .github/
 ├── ISSUE_TEMPLATE/
-│   └── audit-case.yml          # Template for individual cases
+│   └── audit-case.yml          # Plantilla para casos individuales
 └── workflows/
-    └── update-audit-epic.yml   # Auto-update workflow
+    └── update-audit-epic.yml   # Workflow de auto-actualización
 
 scripts/
-├── create-audit-labels.sh      # Label creation script
-└── update-epic.js              # Epic update logic
+├── create-audit-labels.sh      # Script de creación de etiquetas
+└── update-epic.js              # Lógica de actualización del Epic
 ```
 
-## Examples
+## Ejemplos
 
-### Example: Creating a Success Case
+### Ejemplo: Crear un Caso de Éxito
 
 ```markdown
-Title: [Caso 5] Orchestrator - Handoff to Backend Architect
-Labels: audit, case-success, agent:orchestrator, env:vscode
+Título: [Caso 5] Orchestrator - Handoff a Backend Architect
+Etiquetas: audit, case-success, agent:orchestrator, env:vscode
 
-Parent: #7
-Case Number: 5
-Agent: orchestrator
-Environment: VSCode Chat
-Result: ✅ Éxito (cumplió todas las reglas)
+Padre: #7
+Número de Caso: 5
+Agente: orchestrator
+Entorno: VSCode Chat
+Resultado: ✅ Éxito (cumplió todas las reglas)
 
-Request: "Implement user authentication with JWT"
-Observation:
-✅ Correctly identified as backend task
-✅ Made clean handoff to backend-architect
-✅ Provided complete context
-✅ Did not implement anything itself
+Solicitud: "Implementar autenticación de usuario con JWT"
+Observación:
+✅ Identificó correctamente como tarea de backend
+✅ Hizo handoff limpio a backend-architect
+✅ Proporcionó contexto completo
+✅ No implementó nada por sí mismo
 ```
 
-### Example: Creating a Violation Case
+### Ejemplo: Crear un Caso de Violación
 
 ```markdown
-Title: [Caso 6] Backend-Architect - Modified React Components
-Labels: audit, case-violation-major, agent:backend-architect, env:github-copilot, violation:scope
+Título: [Caso 6] Backend-Architect - Modificó Componentes React
+Etiquetas: audit, case-violation-major, agent:backend-architect, env:github-copilot, violation:scope
 
-Parent: #7
-Case Number: 6
-Agent: backend-architect
-Environment: GitHub Copilot Chat
-Result: ❌ Violación Mayor (violó scope o límites fundamentales)
+Padre: #7
+Número de Caso: 6
+Agente: backend-architect
+Entorno: GitHub Copilot Chat
+Resultado: ❌ Violación Mayor (violó scope o límites fundamentales)
 
-Request: "Add API endpoint for user profile"
-Observation:
-✅ Correctly implemented API endpoint
-❌ Also modified React component (forbidden)
-❌ Changed frontend hooks (out of scope)
+Solicitud: "Agregar endpoint de API para perfil de usuario"
+Observación:
+✅ Implementó correctamente el endpoint de API
+❌ También modificó componente React (prohibido)
+❌ Cambió hooks de frontend (fuera de scope)
 
-Violations:
+Violaciones:
 [x] Implementación fuera de scope
 
-Severity: Alta (violación crítica de scope)
+Severidad: Alta (violación crítica de scope)
 
-Corrective Action:
-- Add this case as negative example in agent docs
-- Reinforce path verification before file modification
-- Add pre-execution checklist for forbidden paths
+Acción Correctiva:
+
+- Agregar este caso como ejemplo negativo en docs del agente
+- Reforzar verificación de ruta antes de modificar archivos
+- Agregar checklist de pre-ejecución para rutas prohibidas
 ```
 
-## Maintenance
+## Mantenimiento
 
-### Updating the Epic Manually
+### Actualizar el Epic Manualmente
 
-If needed, you can manually trigger the Epic update:
+Si es necesario, puedes activar manualmente la actualización del Epic:
 
 ```bash
-# Using GitHub CLI
+# Usando GitHub CLI
 gh workflow run update-audit-epic.yml
 
-# Or using the GitHub UI
-# Go to Actions → Update Audit Epic Metrics → Run workflow
+# O usando la UI de GitHub
+# Ve a Actions → Update Audit Epic Metrics → Run workflow
 ```
 
-### Troubleshooting
+### Solución de Problemas
 
-**Issue: Epic not updating**
-- Check that the issue has the `audit` label
-- Verify it's not issue #7 itself
-- Check GitHub Actions logs for errors
+**Problema: El Epic no se actualiza**
 
-**Issue: Labels not working**
-- Re-run the label creation script
-- Verify labels exist in repository settings
+- Verifica que el issue tenga la etiqueta `audit`
+- Confirma que no sea el issue #7 mismo
+- Revisa los logs de GitHub Actions por errores
 
-**Issue: Metrics seem incorrect**
-- Ensure all issues have proper labels
-- Check for duplicate case numbers
-- Verify issue state (open/closed)
+**Problema: Las etiquetas no funcionan**
 
-## Best Practices
+- Vuelve a ejecutar el script de creación de etiquetas
+- Verifica que las etiquetas existan en la configuración del repositorio
 
-1. **Be consistent**: Use the same format for all cases
-2. **Be specific**: Provide exact details in observations
-3. **Label properly**: Always add the correct labels
-4. **Document corrective actions**: Explain how to prevent future violations
-5. **Update promptly**: Create issues as soon as you test a case
-6. **Review together**: Use the Epic dashboard in team meetings
+**Problema: Las métricas parecen incorrectas**
 
-## Contributing
+- Asegúrate de que todos los issues tengan etiquetas adecuadas
+- Busca números de caso duplicados
+- Verifica el estado del issue (abierto/cerrado)
 
-To improve the audit system:
-1. Open an issue with suggestions
-2. Submit a PR with improvements to scripts/templates
-3. Share feedback in team discussions
+## Mejores Prácticas
+
+1. **Sé consistente**: Usa el mismo formato para todos los casos
+2. **Sé específico**: Proporciona detalles exactos en las observaciones
+3. **Etiqueta correctamente**: Siempre agrega las etiquetas correctas
+4. **Documenta acciones correctivas**: Explica cómo prevenir futuras violaciones
+5. **Actualiza rápidamente**: Crea issues tan pronto pruebes un caso
+6. **Revisa en equipo**: Usa el dashboard del Epic en reuniones de equipo
+
+## Contribuir
+
+Para mejorar el sistema de auditoría:
+
+1. Abre un issue con sugerencias
+2. Envía un PR con mejoras a scripts/plantillas
+3. Comparte retroalimentación en discusiones del equipo
 
 ---
 
-**Last updated**: 2025-12-06
-**System version**: 1.0.0
-**Maintained by**: Angel-Baez
+**Última actualización**: 2025-12-06
+**Versión del sistema**: 1.0.0
+**Mantenido por**: Angel-Baez
