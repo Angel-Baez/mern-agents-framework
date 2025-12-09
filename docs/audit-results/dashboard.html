@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="styles.css" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
   </head>
   <body>
     <div id="loading" class="loading-overlay">
@@ -21,13 +22,15 @@
     <header>
       <div class="header-content">
         <div>
-          <h1>📊 Dashboard de Auditoría</h1>
+          <h1><i data-lucide="bar-chart-3"></i> Dashboard de Auditoría</h1>
           <p>Framework de 15 Agentes - Ciclo 2025-12-06</p>
         </div>
         <div class="header-actions">
-          <button id="refreshBtn" class="btn btn-primary">🔄 Actualizar</button>
+          <button id="refreshBtn" class="btn btn-primary">
+            <i data-lucide="refresh-cw"></i> Actualizar
+          </button>
           <button id="exportBtn" class="btn btn-secondary">
-            📥 Exportar PDF
+            <i data-lucide="download"></i> Exportar PDF
           </button>
         </div>
       </div>
@@ -37,22 +40,22 @@
       <!-- Métricas globales -->
       <section id="metrics" class="metrics-section">
         <div class="card metric-card">
-          <h3>Total Casos</h3>
+          <h3><i data-lucide="folder-kanban"></i> Total Casos</h3>
           <p class="metric" id="totalCases">-</p>
           <span class="submetric" id="totalProgress">0/100</span>
         </div>
         <div class="card metric-card success">
-          <h3>Éxitos</h3>
+          <h3><i data-lucide="circle-check"></i> Éxitos</h3>
           <p class="metric" id="successCases">-</p>
           <span class="submetric" id="successRate">0%</span>
         </div>
         <div class="card metric-card warning">
-          <h3>Violaciones</h3>
+          <h3><i data-lucide="alert-triangle"></i> Violaciones</h3>
           <p class="metric" id="violationCases">-</p>
           <span class="submetric" id="violationRate">0%</span>
         </div>
         <div class="card metric-card info">
-          <h3>Tasa de Éxito</h3>
+          <h3><i data-lucide="percent"></i> Tasa de Éxito</h3>
           <p class="metric" id="overallRate">-</p>
           <span class="submetric" id="classification">-</span>
         </div>
@@ -61,33 +64,36 @@
       <!-- Gráficos -->
       <section id="charts" class="charts-section">
         <div class="chart-container">
-          <h2>Distribución de Resultados</h2>
+          <h2><i data-lucide="pie-chart"></i> Distribución de Resultados</h2>
           <canvas id="pieChart"></canvas>
         </div>
         <div class="chart-container">
-          <h2>Rendimiento por Agente</h2>
+          <h2><i data-lucide="bot"></i> Rendimiento por Agente</h2>
           <canvas id="agentChart"></canvas>
         </div>
         <div class="chart-container">
-          <h2>Rendimiento por Entorno</h2>
+          <h2><i data-lucide="monitor"></i> Rendimiento por Entorno</h2>
           <canvas id="envChart"></canvas>
         </div>
         <div class="chart-container">
-          <h2>Tendencia de Éxito</h2>
+          <h2><i data-lucide="trending-up"></i> Tendencia de Éxito</h2>
           <canvas id="trendChart"></canvas>
         </div>
       </section>
 
       <!-- Tabla de casos -->
       <section id="casesTable" class="table-section">
-        <h2>Casos Individuales</h2>
+        <h2><i data-lucide="list"></i> Casos Individuales</h2>
         <div class="filters">
-          <input
-            type="text"
-            id="searchInput"
-            placeholder="🔍 Buscar..."
-            class="filter-input"
-          />
+          <div class="search-wrapper">
+            <i data-lucide="search"></i>
+            <input
+              type="text"
+              id="searchInput"
+              placeholder="Buscar..."
+              class="filter-input"
+            />
+          </div>
           <select id="agentFilter" class="filter-select">
             <option value="">Todos los agentes</option>
           </select>
@@ -96,9 +102,9 @@
           </select>
           <select id="resultFilter" class="filter-select">
             <option value="">Todos los resultados</option>
-            <option value="success">✅ Éxitos</option>
-            <option value="major">❌ Violaciones Mayores</option>
-            <option value="minor">⚠️ Violaciones Menores</option>
+            <option value="success">Éxitos</option>
+            <option value="major">Violaciones Mayores</option>
+            <option value="minor">Violaciones Menores</option>
           </select>
         </div>
         <div class="table-wrapper">
@@ -135,9 +141,15 @@
 
     <div id="errorMessage" class="error-message hidden">
       <p id="errorText"></p>
-      <button id="closeError" class="btn btn-small">Cerrar</button>
+      <button id="closeError" class="btn btn-small">
+        <i data-lucide="x"></i> Cerrar
+      </button>
     </div>
 
     <script src="app.js"></script>
+    <script>
+      // Inicializar iconos de Lucide
+      lucide.createIcons();
+    </script>
   </body>
 </html>
